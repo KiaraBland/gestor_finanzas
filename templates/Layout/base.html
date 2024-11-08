@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Minimalista Mejorada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --sidebar-bg: #2c3e50;
+            --sidebar-hover: #34495e;
+            --text-color: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100%;
+            background-color: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 300;
+        }
+
+        .sidebar .nav-link {
+            color: var(--text-color);
+            font-size: 1.1em;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.collapsed {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        #toggleButton {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 10px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            .sidebar-header {
+                width: var(--sidebar-collapsed-width);
+            }
+            .sidebar.expanded {
+                width: var(--sidebar-width);
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
+
+            .main-content.expanded {
+                margin-left: var(--sidebar-width);
+            }
+
+            .sidebar .nav-link span {
+                display: none;
+            }
+
+            .sidebar.expanded .nav-link span {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h3><i class="fas fa-home"></i></h3>
+    </div>
+    <button id="toggleButton">
+        <i class="fas fa-bars"></i>
+    </button>
+    <nav class="nav flex-column">
+        <a href="#" class="nav-link"><i class="fas fa-home"></i> <span>Inicio</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-user"></i> <span>Perfil</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-cog"></i> <span>Configuración</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-question-circle"></i> <span>Ayuda</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span></a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <h1>Contenido Principal</h1>
+    <p>Este es el contenido principal de la página. La barra lateral ahora es más moderna y responsive.</p>
+</div>
+
+<script>
+    const toggleButton = document.getElementById('toggleButton');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    toggleButton.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('collapsed');
+
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('expanded');
+            mainContent.classList.toggle('expanded');
+        }
+    });
+
+    
+    window.addEventListener('resize', () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('collapsed');
+            sidebar.classList.remove('expanded');
+            mainContent.classList.remove('expanded');
+        } else {
+            sidebar.classList.remove('collapsed', 'expanded');
+            mainContent.classList.remove('collapsed', 'expanded');
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
