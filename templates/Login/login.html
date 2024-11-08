@@ -1,0 +1,37 @@
+{% extends "Login/layout.html" %}
+
+{% block title %}Registro - FinanzApp{% endblock %}
+
+{% block content %}
+<div class="registro-contenedor">
+    <div class="registro-encabezado">
+        <h2><i class="fas fa-user-plus me-2"></i>Login en FinanzApp</h2>
+    </div>
+    <div class="registro-cuerpo">
+        <form id="formularioRegistro" action="{{ url_for('usuarios.login') }}" method="post">
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="correo" placeholder="Tu teléfono" name="correo" required>
+                <label for="correo">Correo</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="contraseña" placeholder="Contraseña" name="clave"
+                    required>
+                <label for="contraseña">Contraseña</label>
+                <div class="fuerza-contraseña" id="fuerzaContraseña"></div>
+            </div>
+            <button class="btn btn-primary w-100 btn-registro" type="submit">Registrarse</button>
+        </form>
+        <div class="link-login">
+            ¿Has olvidado tu contraseña? <a href="{{ url_for('usuarios.registro') }}">Inicia sesión aquí</a>
+        </div>
+        <div class="iconos-financieros">
+            <i class="fas fa-chart-pie"></i>
+            <i class="fas fa-money-bill-wave"></i>
+            <i class="fas fa-piggy-bank"></i>
+            <i class="fas fa-calculator"></i>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

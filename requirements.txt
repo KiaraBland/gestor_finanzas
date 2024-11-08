@@ -1,0 +1,14 @@
+autopep8
+click
+Flask
+Flask-SQLAlchemy
+greenlet
+itsdangerous
+Jinja2
+MarkupSafe
+mysqlclient
+pycodestyle
+python-dotenv
+SQLAlchemy
+toml
+Werkzeug

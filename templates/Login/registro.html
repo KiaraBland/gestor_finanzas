@@ -1,0 +1,92 @@
+{% extends "Login/layout.html" %}
+
+{% block title %}Registro - FinanzApp{% endblock %}
+
+{% block content %}
+        <div class="registro-contenedor">
+            <div class="registro-encabezado">
+                <h2><i class="fas fa-user-plus me-2"></i>Registro en FinanzApp</h2>
+            </div>
+            <div class="registro-cuerpo">
+                <form id="formularioRegistro" action="/auth/registro" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="nombreCompleto" placeholder="Tu nombre"
+                            name="nombre" required>
+                        <label for="nombreCompleto">Nombre completo</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="telefono" placeholder="Tu teléfono" name="telefono"
+                            required>
+                        <label for="telefono">Teléfono</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="correoElectronico" placeholder="nombre@ejemplo.com"
+                            name="correo" required>
+                        <label for="correoElectronico">Correo electrónico</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="contraseña" placeholder="Contraseña"
+                            name="clave" required>
+                        <label for="contraseña">Contraseña</label>
+                        <div class="fuerza-contraseña" id="fuerzaContraseña"></div>
+                    </div>
+                    <button class="btn btn-primary w-100 btn-registro" type="submit">Registrarse</button>
+                </form>
+                <div class="link-login">
+                    ¿Ya tienes una cuenta? <a href="{{ url_for('usuarios.login') }}">Inicia sesión aquí</a>
+                </div>
+                <div class="iconos-financieros">
+                    <i class="fas fa-chart-pie"></i>
+                    <i class="fas fa-money-bill-wave"></i>
+                    <i class="fas fa-piggy-bank"></i>
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/alerta.js') }}"></script>
+
+    <script>
+        document.getElementById('contraseña').addEventListener('input', function (e) {
+            var contraseña = e.target.value;
+            var fuerza = 0;
+            if (contraseña.match(/[a-z]+/)) {
+                fuerza += 1;
+            }
+            if (contraseña.match(/[A-Z]+/)) {
+                fuerza += 1;
+            }
+            if (contraseña.match(/[0-9]+/)) {
+                fuerza += 1;
+            }
+            if (contraseña.match(/[$@#&!]+/)) {
+                fuerza += 1;
+            }
+
+            var fuerzaContraseña = document.getElementById('fuerzaContraseña');
+            switch (fuerza) {
+                case 0:
+                    fuerzaContraseña.style.width = "0%";
+                    fuerzaContraseña.style.backgroundColor = "";
+                    break;
+                case 1:
+                    fuerzaContraseña.style.width = "25%";
+                    fuerzaContraseña.style.backgroundColor = "#ff4d4d";
+                    break;
+                case 2:
+                    fuerzaContraseña.style.width = "50%";
+                    fuerzaContraseña.style.backgroundColor = "#ffa64d";
+                    break;
+                case 3:
+                    fuerzaContraseña.style.width = "75%";
+                    fuerzaContraseña.style.backgroundColor = "#99cc00";
+                    break;
+                case 4:
+                    fuerzaContraseña.style.width = "100%";
+                    fuerzaContraseña.style.backgroundColor = "#4dff4d";
+                    break;
+            }
+        });
+    </script>
+{% endblock %}

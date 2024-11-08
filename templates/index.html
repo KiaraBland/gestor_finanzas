@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzApp - Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--light-color);
+        }
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
+        }
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: var(--secondary-color);
+            color: #fff;
+            transition: all 0.3s;
+        }
+        #sidebar.active {
+            margin-left: -250px;
+        }
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: var(--dark-color);
+        }
+        #sidebar ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--dark-color);
+        }
+        #sidebar ul p {
+            color: #fff;
+            padding: 10px;
+        }
+        #sidebar ul li a {
+            padding: 10px;
+            font-size: 1.1em;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+        }
+        #sidebar ul li a:hover {
+            color: var(--secondary-color);
+            background: #fff;
+        }
+        #sidebar ul li.active > a, a[aria-expanded="true"] {
+            color: #fff;
+            background: var(--primary-color);
+        }
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th {
+            border-top: none;
+        }
+        .wallet-card {
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            color: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .wallet-card .card-body {
+            padding: 2rem;
+        }
+        .wallet-balance {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .wallet-card-number {
+            letter-spacing: 3px;
+        }
+        .wallet-card-expiry {
+            font-size: 0.9rem;
+        }
+        .wallet-recent-transactions {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                margin-left: -250px;
+            }
+            #sidebar.active {
+                margin-left: 0;
+            }
+            #sidebarCollapse span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-chart-line me-2"></i>FinanzApp</h3>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-wallet me-2"></i>Cuentas</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-exchange-alt me-2"></i>Transacciones</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-chart-pie me-2"></i>Informes</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-piggy-bank me-2"></i>Presupuestos</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-cog me-2"></i>Configuración</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i class="fas fa-align-left"></i>
+                        <span>Toggle Sidebar</span>
+                    </button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"><i class="fas fa-bell me-2"></i>Notificaciones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"><i class="fas fa-user me-2"></i>Perfil</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <h2 class="mb-4">Dashboard Financiero</h2>
+            
+            <!-- Cartera Digital -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card wallet-card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Mi Cartera Digital</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <p class="mb-1">Saldo Actual</p>
+                                    <h2 class="wallet-balance mb-0">$15,750.00</h2>
+                                </div>
+                                <i class="fas fa-wallet fa-3x"></i>
+                            </div>
+                            <div class="mb-4">
+                                <p class="wallet-card-number mb-1">**** **** **** 1234</p>
+                                <p class="wallet-card-expiry mb-0">Válida hasta: 12/25</p>
+                            </div>
+                            <div class="wallet-recent-transactions">
+                                <h6 class="mb-3">Transacciones Recientes</h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Supermercado</span>
+                                    <span class="text-danger">-$120.50</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Depósito</span>
+                                    <span class="text-success">+$2,500.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Restaurante</span>
+                                    <span class="text-danger">-$65.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen Financiero -->
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ingresos</h5>
+                                    <p class="card-text display-6 text-success">$5,230.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gastos</h5>
+                                    <p class="card-text display-6 text-danger">$3,450.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ahorros</h5>
+                                    <p class="card-text display-6 text-primary">$1,780.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Inversiones</h5>
+                                    <p class="card-text display-6 text-warning">$5,290.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formularios -->
+            <div class="row mt-4">
+                <!-- Formulario de Nueva Transacción -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Nueva Transacción</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="newTransactionForm">
+                                <div class="mb-3">
+                                    <label for="transactionType" class="form-label">Tipo de Transacción</label>
+                                    <select class="form-select" id="transactionType" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="ingreso">Ingreso</option>
+                                        <option value="gasto">Gasto</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="transactionAmount" class="form-label">Monto</label>
+                                    <input type="number" class="form-control" id="transactionAmount" step="0.01" min="0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="transactionCategory" class="form-label">Categoría</label>
+                                    <input type="text" class="form-control" id="transactionCategory" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="transactionDate" class="form-label">Fecha</label>
+                                    <input type="date" class="form-control" id="transactionDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="transactionDescription" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="transactionDescription" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Agregar Transacción</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de Nuevo Presupuesto -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Nuevo Presupuesto</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="newBudgetForm">
+                                <div class="mb-3">
+                                    <label for="budgetName" class="form-label">Nombre del Presupuesto</label>
+                                    <input type="text" class="form-control" id="budgetName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="budgetAmount" class="form-label">Monto Límite</label>
+                                    <input type="number" class="form-control" id="budgetAmount" step="0.01" min="0" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="budgetCategory" class="form-label">Categoría</label>
+                                    <input type="text" class="form-control" id="budgetCategory" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="budgetPeriod" class="form-label">Período</label>
+                                    <select class="form-select" id="budgetPeriod" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="semanal">Semanal</option>
+                                        <option value="mensual">Mensual</option>
+                                        <option value="anual">Anual</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="budgetStartDate" class="form-label">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="budgetStartDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="budgetNotes" class="form-label">Notas</label>
+                                    <textarea class="form-control" id="budgetNotes" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Crear Presupuesto</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transacciones Recientes -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Transacciones Recientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-05-15</td>
+                                    <td>Supermercado</td>
+                                    <td>Alimentación</td>
+                                    <td class="text-danger">-$120.50</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-14</td>
+                                    <td>Depósito de nómina</td>
+                                    <td>Ingresos</td>
+                                    <td class="text-success">+$2,500.00</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-13</td>
+                                    <td>Pago de alquiler</td>
+                                    <td>Vivienda</td>
+                                    <td class="text-danger">-$800.00</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-12</td>
+                                    <td>Cena en restaurante</td>
+                                    <td>Entretenimiento</td>
+                                    <td class="text-danger">-$65.00</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-05-11</td>
+                                    <td>Venta de artículo</td>
+                                    <td>Ingresos</td>
+                                    <td class="text-success">+$150.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var sidebarCollapse = document.getElementById("sidebarCollapse");
+            var sidebar = document.getElementById("sidebar");
+
+            sidebarCollapse.addEventListener("click", function() {
+                sidebar.classList.toggle("active");
+            });
+
+            // Manejar el envío del formulario de nueva transacción
+            document.getElementById("newTransactionForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                alert("Nueva transacción agregada (simulación)");
+                this.reset();
+            });
+
+            // Manejar el envío del formulario de nuevo presupuesto
+            document.getElementById("newBudgetForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                alert("Nuevo presupuesto creado (simulación)");
+                this.reset();
+            });
+        });
+    </script>
+</body>
+</html>
