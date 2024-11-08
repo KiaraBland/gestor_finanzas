@@ -6,6 +6,8 @@ from routes.registro import usuarios
 from routes.Ingresos import ingresos
 from routes.egresos import egresos  
 from routes.transacciones import transacciones  
+from routes.egresos import egresos 
+from routes.categoria import categoria
 import logging
 app = Flask(__name__)
 
@@ -46,3 +48,7 @@ app.register_blueprint(usuarios)
 app.register_blueprint(ingresos)
 app.register_blueprint(egresos)
 app.register_blueprint(transacciones)
+app.register_blueprint(categoria)
+
+
+
