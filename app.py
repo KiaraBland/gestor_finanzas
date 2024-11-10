@@ -8,6 +8,7 @@ from routes.egresos import egresos
 from routes.transacciones import transacciones  
 from routes.egresos import egresos 
 from routes.categoria import categoria
+from utils.helper import login_required
 import logging
 app = Flask(__name__)
 
@@ -25,8 +26,9 @@ db.init_app(app)
 logging.basicConfig(level=logging.INFO)
 
 @app.route('/')
+@login_required
 def index():
-    return render_template('Layout/base.html')
+    return render_template('index.html')
 
 @app.errorhandler(404)
 def not_found(error):

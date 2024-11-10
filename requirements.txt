@@ -12,3 +12,4 @@ python-dotenv
 SQLAlchemy
 toml
 Werkzeug
+PyMySQL 
