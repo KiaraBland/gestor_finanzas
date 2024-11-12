@@ -1,0 +1,80 @@
+{% extends "Layout/base.html" %}
+
+{% block title %}ingresos - FinanzApp{% endblock %}
+
+{% block content %}
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    registrar ingresos
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nuevo ingresos</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/crearingresos" method="post">
+        <div class="modal-body">
+           
+                <div class="mb-3">
+                    <label for="description" class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" id="nombre" name="cantidad" required min=1>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Divisa</label>
+                    <select class="form-select" aria-label="Default select example" name="divisa">
+                        {% for divisa in divisa %}
+                        <option value="{{divisa.id}}">{{divisa.nombre}}  {{divisa.simbolo}}  </option>
+                        {% endfor %}
+                      </select>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">categoria</label>
+                    <select class="form-select" aria-label="Default select example"  name="categoria">
+                        {% for categoria in categoria %}
+                        <option value="{{categoria.id}}">{{categoria.nombre}}  </option>
+                        {% endfor %}
+                        <option value = "h">HOLA</option>
+                      </select>
+                </div>
+                
+                
+            </div>
+                
+            
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Agregar</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+<table class="table table-striped table-success">
+    <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Categoria</th>
+          <th scope="col">Divisa</th>
+          <th scope="col">Cantidad</th>
+
+          <th scope="col">Fecha</th>
+        </tr><th scope="col">Acciones</th>
+      </thead>
+      <tbody>
+         {% for ingresos in ingresos %}
+         <tr>
+            <th scope="row">{{ingresos.id}}</th>
+            <td>{{ingresos.cantidad}}</td>
+            
+            <td><button type="button" class="btn btn-warning">editar</button></td>
+          </tr>
+         {% endfor %}
+        
+       
+      </tbody>
+  </table>
+{% endblock %}

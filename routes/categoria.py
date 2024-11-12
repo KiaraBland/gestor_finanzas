@@ -8,9 +8,44 @@ categoria = Blueprint("categoria", __name__)
 
 
 @categoria.route('/categoria')
-
+@login_required
 def index():
-    #usuarios = db.session.execute(text("SELECT * FROM usuarios")).fetchall()
-   
-    return render_template('Layout/base.html')
+    
+    categoria = db.session.execute(
+            text("SELECT * FROM categoria")
+        ).fetchall()
+    print(categoria)
+    return render_template('categoria/index.html',categoria=categoria)
 
+@categoria.route('/crearcategoria',methods=["POST", "GET"])
+@login_required
+def categoriacrear():
+    
+     if request.method == 'POST':
+        # Capturar datos del formulario
+        nombre = request.form['nombre']
+      
+        descripcion = request.form['descripcion']
+
+
+        # Verificar si la categoria ya existe por el nombre
+        existente = db.session.execute(
+            text("SELECT * FROM categoria WHERE nombre = :nombre"),
+            {"nombre": nombre}
+        ).fetchone()
+
+        if existente:
+            flash(
+                "El nombre y la categoria ya estan registrados. Intente con otros datos.", "error")
+            return redirect(url_for('categoria.index'))
+
+        # Insertar el nuevo usuario en la base de datos
+        db.session.execute(
+            text("INSERT INTO categoria (nombre, descripcion) VALUES (:nombre, :descripcion)"),
+            {"nombre": nombre, 
+                "descripcion": descripcion}
+        )
+        db.session.commit()  # Confirmar cambios en la base de datos
+        flash("Registro exitoso. .", "success")
+        return redirect( url_for('categoria.index') )
+    

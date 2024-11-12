@@ -113,7 +113,7 @@ def registro():
                 "correo": correo, "clave": hash}
         )
         db.session.commit()  # Confirmar cambios en la base de datos
-        flash("Registro exitoso. Ahora puedes iniciar sesión.", "error")
+        flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
         return redirect(url_for('usuarios.index'))
 
     # Si es un método GET, renderizar el formulario de registro
