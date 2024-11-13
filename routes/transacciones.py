@@ -7,9 +7,14 @@ from utils.helper import login_required
 transacciones = Blueprint("transacciones", __name__)
 
 
-@transacciones.route('/transacciones')
-
+@transacciones.route('/inicio')
+@login_required
 def index():
-    #usuarios = db.session.execute(text("SELECT * FROM usuarios")).fetchall()
-   
-    return render_template('Layout/base.html')
+    ingresosencordobas = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM ingresos where divisa_id = 1 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
+    ingresosendolar = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM ingresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
+    egresosencordobas = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 1 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
+    egresosendolares = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
+    print(ingresosencordobas)
+    #saldototalencordoba=int(ingresosencordobas["cantidad"])-int(egresosencordobas["cantidad"])
+    saldototalencordoba=0
+    return render_template('index.html',ingresosencordobas=ingresosencordobas, ingresosendolar=ingresosendolar, egresosencordobas=egresosencordobas, egresosendolares=egresosendolares, saldototalencordoba= saldototalencordoba)

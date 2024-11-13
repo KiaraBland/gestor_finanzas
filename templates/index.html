@@ -18,16 +18,32 @@
     <div class="col-6">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Ingresos</h5>
-                <p class="card-text text-success">$3,500.00</p>
+                <h5 class="card-title">Ingresos en córdobas</h5>
+                <p class="card-text text-success">c$ {{ingresosencordobas["cantidad"]}}</p>
             </div>
         </div>
     </div>
     <div class="col-6">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Gastos</h5>
-                <p class="card-text text-danger">$1,500.00</p>
+                <h5 class="card-title">Ingresos en dólares</h5>
+                <p class="card-text text-success">$ {{ingresosendolar["cantidad"]}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Gastos en córdobas</h5>
+                <p class="card-text text-danger">c$ {{egresosencordobas["cantidad"]}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Gastos en dólares</h5>
+                <p class="card-text text-danger">$ {{egresosendolares["cantidad"]}}</p>
             </div>
         </div>
     </div>

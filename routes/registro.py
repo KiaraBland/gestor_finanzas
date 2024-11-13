@@ -76,7 +76,7 @@ def login():
             session['nombre'] = usuario[1]
             flash("Inicio de sesión exitoso. Bienvenido/a, " +
                   usuario[1], "success")
-            return redirect(url_for('usuarios.index'))
+            return redirect(url_for('transacciones.index'))
         else:
             flash("Correo o contraseña incorrectos.", "error")
             return redirect(url_for('usuarios.login'))

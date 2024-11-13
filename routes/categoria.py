@@ -49,3 +49,42 @@ def categoriacrear():
         flash("Registro exitoso. .", "success")
         return redirect( url_for('categoria.index') )
     
+
+@categoria.route('/actualizarcategoria/<int:id>', methods=["POST", "GET"])
+@login_required
+def actualizar_categoria(id):
+    # Recuperamos el egreso que vamos a editar
+    categoria = db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": id}
+    ).fetchone()
+
+    if not categoria:
+        flash("Categoria no encontrado.", "error")
+        return redirect(url_for('categoria.index'))
+
+    if request.method == 'POST':
+        # Capturamos los datos enviados en el formulario
+        nombre= request.form['nombre']
+        descripcion = request.form['descripcion']
+        
+        # Validación de los campos
+        
+        
+        db.session.execute(
+            text("""
+                UPDATE categoria
+                SET nombre= :nombre, descripcion= :descripcion 
+                WHERE id = :id
+            """),
+            {
+                "nombre": nombre,
+                "descripcion": descripcion,
+                "id": id
+            }
+        )
+        db.session.commit()  
+
+        flash("Categoria actualizada exitosamente.", "success")
+        return redirect(url_for('categoria.index'))
+

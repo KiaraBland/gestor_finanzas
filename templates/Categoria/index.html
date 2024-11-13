@@ -58,7 +58,11 @@
           <th scope="row">{{categoria.id}}</th>
           <td>{{categoria.nombre}}</td>
           <td>{{categoria.descripcion}}</td>
-          <td><button type="button" class="btn btn-warning">editar</button></td>
+          <td>
+            <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-default{{categoria.id}}">
+              <i class="fas fa-pencil-alt"></i> Editar
+            </a>
+          </td>
         </tr>
         {% endfor %}
 
@@ -67,4 +71,41 @@
     </table>
   </div>
 </div>
+{% for categoria in categoria %}
+<div class="modal fade" id="modal-default{{categoria.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar categoria</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/actualizarcategoria/{{categoria.id}}" method="post">
+        <div class="modal-body">
+          <!-- Campo Divisa -->
+          
+          <!-- Campo Cantidad -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="cantidad" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre" value="{{categoria.nombre}}" required min="1">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <input type="text" class="form-control" id="descripcion" name="descripcion" value="{{categoria.descripcion}}" required min="1">
+            </div>
+          </div>
+          
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}
