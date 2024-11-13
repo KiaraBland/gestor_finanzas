@@ -9,30 +9,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- CSS de DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css">
+
+    <!-- CSS para hacer la tabla responsive -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.0/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
+
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-top">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white navbar-top">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">FinanzApp</span>
-            <div class="dropdown">
-                <a class="btn  dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-bell"></i>
-                </a>
-
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+            <a class="navbar-brand" href="#">FinanzApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                            <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                            <li><a class="dropdown-item" href="#">Nuevo ingreso registrado</a></li>
+                            <li><a class="dropdown-item" href="#">Alerta de presupuesto</a></li>
+                            <li><a class="dropdown-item" href="#">Recordatorio de pago</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-primary" href="#">Ver todas las notificaciones</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('usuarios.logout') }}">Cerrar sesión</a>
+                    </li>
                 </ul>
             </div>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('usuarios.logout') }}">Cerrar sesión</a>
-            </li>
-          
         </div>
-
     </nav>
 
     <div class="container mt-4">
@@ -40,11 +55,11 @@
 
     </div>
 
-    <nav class="navbar fixed-bottom navbar-light navbar-bottom">
+    <nav class="navbar fixed-bottom navbar-light bg-light navbar-bottom">
         <div class="container-fluid">
             <ul class="navbar-nav w-100 justify-content-between flex-row">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">
+                    <a class="nav-link active" href="{{ url_for('index') }}">
                         <i class="bi bi-house-door"></i>
                         Inicio
                     </a>
@@ -57,13 +72,13 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('ingresos.index') }}">
-                        <i class="bi bi-graph-up"></i>
+                        <i class="bi bi-cash-coin"></i>
                         Ingresos
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">
-                        <i class="bi bi-plus-circle"></i>
+                        <i class="bi bi-credit-card"></i>
                         Egresos
                     </a>
                 </li>
@@ -73,22 +88,52 @@
                         Configuraciones
                     </a>
                 </li>
-                
             </ul>
         </div>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
-   <script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+    <!-- JavaScript para DataTables Responsive -->
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+    <!-- Inicialización de DataTables -->
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+              
+                order: [[3, 'desc']],   // Ordenar por la columna 3 de manera descendente
+                language: {
+                    search: "Buscar en tabla:",              
+                    lengthMenu: "Mostrar _MENU_ registros por página", 
+                    info: "Mostrando página _PAGE_ de _PAGES_", 
+                    infoEmpty: "No hay registros disponibles", 
+                    infoFiltered: "(filtrado de _MAX_ registros en total)", 
+                    zeroRecords: "No se encontraron coincidencias", 
+                    paginate: {
+                        first: "Primera", 
+                        previous: "Anterior", 
+                        next: "Siguiente", 
+                        last: "Última" 
+                    },
+                }
+            });
+        });
+    </script>
+    
+
+    <script>
         var flashMessages = [
-            {% with messages = get_flashed_messages(with_categories=True) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        { "category": "{{ category }}", "message": "{{ message }}" }{% if not loop.last %},{% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            {% with messages = get_flashed_messages(with_categories = True) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        { "category": "{{ category }}", "message": "{{ message }}" } {% if not loop.last %}, {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
         ];
     </script>
     <script src="{{ url_for('static', filename='js/alerta.js') }}"></script>
