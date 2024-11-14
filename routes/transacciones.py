@@ -14,7 +14,10 @@ def index():
     ingresosendolar = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM ingresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
     egresosencordobas = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 1 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
     egresosendolares = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
-    print(ingresosencordobas)
-    #saldototalencordoba=int(ingresosencordobas["cantidad"])-int(egresosencordobas["cantidad"])
-    saldototalencordoba=0
+    # Obtener valores con un valor predeterminado en caso de None
+    ingresos_cordobas = ingresosencordobas[0] or 0
+    egresos_cordobas = egresosencordobas[0] or 0
+    
+    # Calcular el saldo total en córdobas
+    saldototalencordoba = int(ingresos_cordobas) - int(egresos_cordobas)
     return render_template('index.html',ingresosencordobas=ingresosencordobas, ingresosendolar=ingresosendolar, egresosencordobas=egresosencordobas, egresosendolares=egresosendolares, saldototalencordoba= saldototalencordoba)

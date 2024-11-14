@@ -93,3 +93,33 @@ def actualizar_ingreso(id):
 
         flash("Ingreso actualizado exitosamente.", "success")
         return redirect(url_for('ingresos.index'))
+    
+@ingresos.route('/replicaringreso/<int:ingreso_id>', methods=["GET"])
+@login_required
+def replicaringreso(ingreso_id):
+    # Fetch the original income entry by ID
+    original_ingreso = db.session.execute(
+        text("SELECT categoria_id, divisa_id, usuario_id, cantidad FROM ingresos WHERE id = :ingreso_id"),
+        {"ingreso_id": ingreso_id}
+    ).fetchone()
+
+    if original_ingreso is None:
+        flash("Ingreso no encontrado.", "error")
+        return redirect(url_for('ingresos.index'))
+
+    # Replicate the income entry with the current date
+    fecha = datetime.date.today()
+    db.session.execute(
+        text("INSERT INTO ingresos (categoria_id, divisa_id, usuario_id, cantidad, fecha) VALUES (:categoria_id, :divisa_id, :usuario_id, :cantidad, :fecha)"),
+        {
+            "categoria_id": original_ingreso[0],  # Access by index
+            "divisa_id": original_ingreso[1],
+            "usuario_id": original_ingreso[2],
+            "cantidad": original_ingreso[3],
+            "fecha": fecha
+        }
+    )
+    db.session.commit()  # Confirm the changes in the database
+    flash("Ingreso replicado exitosamente.", "success")
+    
+    return redirect(url_for('ingresos.index'))
