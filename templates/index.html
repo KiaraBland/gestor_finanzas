@@ -7,12 +7,23 @@
 <div class="row g-3">
 
 
-    <div class="col-12">
+    <div class="col-6">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Saldo Total en córdobas</h5>
                 <p class="card-text {{ 'text-danger' if saldototalencordoba < 0 else 'text-success' }}">
                     C${{ saldototalencordoba }}
+                </p>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Saldo Total en dólares</h5>
+                <p class="card-text {{ 'text-danger' if saldototalendolares < 0 else 'text-success' }}">
+                    C${{ saldototalendolares }}
                 </p>
 
             </div>

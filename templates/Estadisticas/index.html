@@ -1,0 +1,458 @@
+{% extends "Layout/base.html" %}
+
+{% block title %}Dashboard - FinanzApp{% endblock %}
+
+{% block content %}
+
+<div class="row g-3">
+
+
+    <!-- Formulario de filtros -->
+    <form id="filtros">
+
+        <label for="categoria_id">Categoría:</label>
+        <select class="form-select" name="categoria_id" id="categoria_id">
+            {% for categoria in categoria %}
+            <option value="{{categoria.id}}">
+                {{categoria.nombre}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="fecha_inicio">Fecha Inicio:</label>
+        <input type="date" id="fecha_inicio" class="form-control" name="fecha_inicio">
+
+        <label for="fecha_fin">Fecha Fin:</label>
+        <input type="date" id="fecha_fin" class="form-control" name="fecha_fin">
+        <div class="mb-2">
+            <br>
+            <button type="button" class="btn btn-success" id="filtrar">Aplicar Filtros</button>
+        </div>
+    </form>
+
+
+    <!-- Canvas para Chart.js -->
+    <div class="shadow-none container-fluid">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <canvas id="grafica" width="400" height="200"></canvas>
+
+            </div>
+            <div class="col-md-6 col-sm-12">
+                
+                <canvas id="graficas" width="400" height="200"></canvas>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <canvas id="graficaLineal" width="400" height="200"></canvas>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <canvas id="graficasegresos" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctxs = document.getElementById('graficas').getContext('2d');
+
+        // Inicializar gráfico vacío (pastel)
+        let graficaPastel = new Chart(ctxs, {
+            type: 'polarArea', // Cambiar el tipo de gráfico a 'pie' para gráfico de pastel
+            data: {
+                labels: [], // Nombres de las categorías
+                datasets: [{
+                    label: 'Distribución de Ingresos',
+                    data: [], // Cantidades de ingresos
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ], // Colores de cada sector (puedes personalizar más colores aquí)
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ], // Bordes de cada sector
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            // Personalizar tooltip para mostrar detalles
+                            label: function (tooltipItem) {
+                                return `${tooltipItem.label}: $${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                },
+                responsive: true, // Hacer el gráfico responsivo
+                plugins: {
+                    legend: {
+                        position: 'top', // Ubicación de la leyenda
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return `${tooltipItem.label}: $${tooltipItem.raw}`; // Formato del tooltip
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Función para actualizar el gráfico de pastel con ingresos individuales
+        function actualizarGraficaPastel(datos) {
+            const labels = datos.map(d => d.categoria_nombre); // Nombres de las categorías
+            const data = datos.map(d => d.cantidad); // Cantidades de ingresos
+
+            graficaPastel.data.labels = labels;
+            graficaPastel.data.datasets[0].data = data;
+            graficaPastel.update();
+        }
+
+        // Función para obtener datos filtrados para el gráfico de pastel
+        function obtenerDatosFiltradosPastel() {
+            const categoria_id = document.getElementById('categoria_id');
+
+            const fecha_inicio = document.getElementById('fecha_inicio').value;
+            const fecha_fin = document.getElementById('fecha_fin').value;
+            var pro = categoria_id.options[categoria_id.selectedIndex].value;
+
+            // Construir la URL con los parámetros
+            const url = new URL('/datos/ingresos', window.location.origin);
+            if (categoria_id) url.searchParams.append('categoria_id', pro);
+            if (fecha_inicio) url.searchParams.append('fecha_inicio', fecha_inicio);
+            if (fecha_fin) url.searchParams.append('fecha_fin', fecha_fin);
+
+            // Obtener datos del backend
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos filtrados para gráfico de pastel:', data);
+                    actualizarGraficaPastel(data);
+                })
+                .catch(error => console.error('Error al obtener datos para gráfico de pastel:', error));
+        }
+
+        // Cargar datos iniciales para gráfico de pastel
+        function cargarDatosInicialesPastel() {
+            fetch('/datos/ingresos')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos iniciales para gráfico de pastel:', data);
+                    actualizarGraficaPastel(data);
+                })
+                .catch(error => console.error('Error al cargar datos iniciales para gráfico de pastel:', error));
+        }
+
+        // Cargar datos iniciales para gráfico de pastel
+        cargarDatosInicialesPastel();
+
+        // Evento para aplicar filtros y actualizar gráfico de pastel
+        document.getElementById('filtrar').addEventListener('click', obtenerDatosFiltradosPastel);
+
+    </script>
+    <script>
+        const ctx = document.getElementById('grafica').getContext('2d');
+
+        // Inicializar gráfico vacío
+        let grafica = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [], // Fechas de ingresos
+                datasets: [{
+                    label: 'Ingresos Individuales',
+                    data: [], // Cantidades de ingresos
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            // Personalizar tooltip para mostrar detalles
+                            label: function (tooltipItem) {
+                                return `Cantidad: ${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cantidad ($)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Función para actualizar el gráfico con ingresos individuales
+        function actualizarGrafica(datos) {
+            const labels = datos.map(d => d.categoria_nombre); // Nombres de las categorías
+            const data = datos.map(d => d.cantidad); // Cantidades
+
+            grafica.data.labels = labels;
+            grafica.data.datasets[0].data = data;
+            grafica.update();
+        }
+
+
+        // Función para obtener datos del backend
+        function obtenerDatosFiltrados() {
+            const categoria_id = document.getElementById('categoria_id').value;
+            const fecha_inicio = document.getElementById('fecha_inicio').value;
+            const fecha_fin = document.getElementById('fecha_fin').value;
+
+            // Construir la URL con los parámetros
+            const url = new URL('/datos/ingresos', window.location.origin);
+            if (categoria_id) url.searchParams.append('categoria_id', categoria_id);
+            if (fecha_inicio) url.searchParams.append('fecha_inicio', fecha_inicio);
+            if (fecha_fin) url.searchParams.append('fecha_fin', fecha_fin);
+
+            // Obtener datos del backend
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos filtrados:', data);
+                    actualizarGrafica(data);
+                })
+                .catch(error => console.error('Error al obtener datos:', error));
+        }
+
+        // Cargar datos iniciales
+        function cargarDatosIniciales() {
+            fetch('/datos/ingresos')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos iniciales:', data);
+                    actualizarGrafica(data);
+                })
+                .catch(error => console.error('Error al cargar datos iniciales:', error));
+        }
+
+        // Cargar datos al inicio
+        cargarDatosIniciales();
+
+        // Evento para aplicar filtros
+        document.getElementById('filtrar').addEventListener('click', obtenerDatosFiltrados);
+
+    </script>
+    <script>
+        const ctxd = document.getElementById('graficaLineal').getContext('2d');
+
+        // Inicializar gráfico vacío de tipo 'line'
+        let graficaLineal = new Chart(ctxd, {
+            type: 'polarArea',
+            data: {
+                labels: [], // Fechas de ingresos y egresos
+                datasets: [{
+                    label: 'Ingresos',
+                    data: [], // Cantidades de ingresos
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false, // Sin relleno en el área debajo de la línea
+                    borderWidth: 2
+                },
+                {
+                    label: 'Egresos',
+                    data: [], // Cantidades de egresos
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false, // Sin relleno en el área debajo de la línea
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return `${tooltipItem.dataset.label}: $${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cantidad ($)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Función para actualizar el gráfico con los datos de ingresos y egresos
+        function actualizarGraficaLineal(datos) {
+            graficaLineal.data.labels = datos.fechas;
+            graficaLineal.data.datasets[0].data = datos.ingresos; // Datos de ingresos
+            graficaLineal.data.datasets[1].data = datos.egresos;  // Datos de egresos
+            graficaLineal.update();
+        }
+
+        // Función para obtener datos del backend
+        function obtenerDatosFiltrados() {
+            const fecha_inicio = document.getElementById('fecha_inicio').value;
+            const fecha_fin = document.getElementById('fecha_fin').value;
+
+            // Construir la URL con los parámetros
+            const url = new URL('/datos/ingresos_vs_egresos', window.location.origin);
+            if (fecha_inicio) url.searchParams.append('fecha_inicio', fecha_inicio);
+            if (fecha_fin) url.searchParams.append('fecha_fin', fecha_fin);
+
+            // Obtener datos del backend
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos filtrados:', data);
+                    actualizarGraficaLineal(data);
+                })
+                .catch(error => console.error('Error al obtener datos:', error));
+        }
+
+        // Cargar datos iniciales
+        function cargarDatosIniciales() {
+            fetch('/datos/ingresos_vs_egresos')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos iniciales:', data);
+                    actualizarGraficaLineal(data);
+                })
+                .catch(error => console.error('Error al cargar datos iniciales:', error));
+        }
+
+        // Cargar datos al inicio
+        cargarDatosIniciales();
+
+        // Evento para aplicar filtros
+        document.getElementById('filtrar').addEventListener('click', obtenerDatosFiltrados);
+    </script>
+   <script>
+    const ctxegresos = document.getElementById('graficasegresos').getContext('2d');
+
+    // Inicializar gráfico vacío
+    let graficasegresos = new Chart(ctxegresos, {
+        type: 'bar',
+        data: {
+            labels: [], // Fechas de egresos
+            datasets: [{
+                label: 'Egresos Individuales',
+                data: [], // Cantidades de egresos
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        // Personalizar tooltip para mostrar detalles
+                        label: function (tooltipItem) {
+                            return `Cantidad: ${tooltipItem.raw}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad ($)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha'
+                    }
+                }
+            }
+        }
+    });
+
+    // Función para actualizar el gráfico con ingresos individuales
+    function actualizarGraficaegresos(datos) {
+        const labels = datos.map(d => d.categoria_nombre); // Nombres de las categorías
+        const data = datos.map(d => d.cantidad); // Cantidades
+
+        grafica.data.labels = labels;
+        grafica.data.datasets[0].data = data;
+        grafica.update();
+    }
+
+
+    // Función para obtener datos del backend
+    function obtenerDatosFiltradosegresos() {
+        const categoria_id = document.getElementById('categoria_id').value;
+        const fecha_inicio = document.getElementById('fecha_inicio').value;
+        const fecha_fin = document.getElementById('fecha_fin').value;
+
+        // Construir la URL con los parámetros
+        const url = new URL('/datos/egresos', window.location.origin);
+        if (categoria_id) url.searchParams.append('categoria_id', categoria_id);
+        if (fecha_inicio) url.searchParams.append('fecha_inicio', fecha_inicio);
+        if (fecha_fin) url.searchParams.append('fecha_fin', fecha_fin);
+
+        // Obtener datos del backend
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos filtrados:', data);
+                actualizarGraficaegresos(data);
+            })
+            .catch(error => console.error('Error al obtener datos:', error));
+    }
+
+    // Cargar datos iniciales
+    function cargarDatosInicialesegresos() {
+        fetch('/datos/egresos')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos iniciales:', data);
+                actualizarGraficaegresos(data);
+            })
+            .catch(error => console.error('Error al cargar datos iniciales:', error));
+    }
+
+    // Cargar datos al inicio
+    cargarDatosInicialesegresos();
+
+    // Evento para aplicar filtros
+    document.getElementById('filtrar').addEventListener('click', obtenerDatosFiltradosegresos);
+
+</script>
+    {% endblock %}

@@ -17,10 +17,20 @@ def index():
     # Obtener valores con un valor predeterminado en caso de None
     ingresos_cordobas = ingresosencordobas[0] or 0
     egresos_cordobas = egresosencordobas[0] or 0
+    ingresos_dolares = ingresosendolar[0] or 0
+    egresos_dolares = egresosendolares[0] or 0
+
+    
     
     # Calcular el saldo total en córdobas
     saldototalencordoba = int(ingresos_cordobas) - int(egresos_cordobas)
-    return render_template('index.html',ingresosencordobas=ingresosencordobas, ingresosendolar=ingresosendolar, egresosencordobas=egresosencordobas, egresosendolares=egresosendolares, saldototalencordoba= saldototalencordoba)
+    saldototalendolares= int(ingresos_dolares)- int (egresos_dolares)
+    return render_template('index.html',ingresosencordobas=ingresosencordobas, ingresosendolar=ingresosendolar, egresosencordobas=egresosencordobas, egresosendolares=egresosendolares, saldototalencordoba= saldototalencordoba, saldototalendolares= saldototalendolares)
+@transacciones.route('/estadisticas')
+@login_required
+def estadisticas():
+    categoria=db.session.execute(text("SELECT * FROM categoria")).fetchall()
+    return render_template('Estadisticas/index.html', categoria=categoria)
 
 
 @transacciones.route('/datos/ingresos', methods=['GET'])
@@ -146,3 +156,73 @@ def get_ingresos_vs_egresos():
     }
 
     return jsonify(data)
+@transacciones.route('/datos/egresos', methods=['GET'])
+def get_egresos():
+    # Obtener parámetros de la solicitud
+    categoria_id = request.args.get('categoria_id')  # Opcional
+    fecha_inicio = request.args.get('fecha_inicio')  # Opcional
+    fecha_fin = request.args.get('fecha_fin')        # Opcional
+
+    # Construir la consulta dinámica con un JOIN para obtener el nombre de la categoría
+    query = '''
+        SELECT egresos.id, egresos.cantidad, egresos.fecha, 
+               egresos.usuario_id, egresos.categoria_id, 
+               categoria.nombre AS categoria_nombre
+        FROM egresos
+        JOIN categoria ON egresos.categoria_id = categoria.id
+        WHERE egresos.usuario_id = :usuario_id
+    '''
+    params = {'usuario_id': session['usuario_id']}
+
+    # Agregar filtros dinámicos
+    if categoria_id:
+        query += ' AND egresos.categoria_id = :categoria_id'
+        params['categoria_id'] = categoria_id
+    if fecha_inicio:
+        query += ' AND egresos.fecha >= :fecha_inicio'
+        params['fecha_inicio'] = fecha_inicio
+    if fecha_fin:
+        query += ' AND egresos.fecha <= :fecha_fin'
+        params['fecha_fin'] = fecha_fin
+
+    # Ejecutar la consulta
+    egresos = db.session.execute(text(query), params).fetchall()
+
+    # Convertir el resultado a una lista de diccionarios
+    egresos_list = [dict(row._mapping) for row in egresos]
+
+    return jsonify(egresos_list)
+
+
+@transacciones.route('/datos/egreso_por_categoria', methods=['GET'])
+def get_egresos_por_categoria():
+    # Obtener parámetros de filtro opcionales
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
+
+    # Construir la consulta dinámica
+    query = '''
+        SELECT categoria.nombre AS categoria_nombre, 
+               SUM(egresos.cantidad) AS total
+        FROM egresos
+        JOIN categoria ON egresos.categoria_id = categoria.id
+        WHERE egresos.usuario_id = :usuario_id
+    '''
+    params = {'usuario_id': session['usuario_id']}
+
+    if fecha_inicio:
+        query += ' AND egresos.fecha >= :fecha_inicio'
+        params['fecha_inicio'] = fecha_inicio
+    if fecha_fin:
+        query += ' AND egresos.fecha <= :fecha_fin'
+        params['fecha_fin'] = fecha_fin
+
+    query += ' GROUP BY categoria.id, categoria.nombre'
+
+    # Ejecutar la consulta
+    egresos = db.session.execute(text(query), params).fetchall()
+
+    # Convertir el resultado a una lista de diccionarios
+    egresos_list = [dict(row._mapping) for row in egresos]
+
+    return jsonify(egresos_list)
