@@ -10,12 +10,15 @@ categoria = Blueprint("categoria", __name__)
 @categoria.route('/categoria')
 @login_required
 def index():
-    
+    id=  session['usuario_id']
+    usuarios = db.session.execute(text("SELECT * FROM usuarios WHERE id = :id"),
+            {"id": id}
+        ).fetchone()
     categoria = db.session.execute(
             text("SELECT * FROM categoria")
         ).fetchall()
     print(categoria)
-    return render_template('categoria/index.html',categoria=categoria)
+    return render_template('categoria/index.html',categoria=categoria,usuarios=usuarios)
 
 @categoria.route('/crearcategoria',methods=["POST", "GET"])
 @login_required

@@ -48,6 +48,22 @@ def ingresoscrear():
                 "fecha":fecha}
         )
         db.session.commit()  # Confirmar cambios en la base de datos
+
+        categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+        concepto=categorianombre[1]
+        db.session.execute(
+            text("INSERT INTO movimientos (usuario_id,divisa_id,cantidad,concepto,tipo) VALUES (:usuario_id,:divisa_id,:cantidad,:concepto,:tipo)"),
+            {"usuario_id":session['usuario_id'],
+                "divisa_id":divisa,
+                "cantidad":cantidad,
+                "concepto":concepto,
+                "tipo":"ingreso"}
+        )
+        db.session.commit() 
         flash("Registro exitoso. .", "success")
         return redirect( url_for('ingresos.index') )
     
@@ -121,5 +137,7 @@ def replicaringreso(ingreso_id):
     )
     db.session.commit()  # Confirm the changes in the database
     flash("Ingreso replicado exitosamente.", "success")
+
+
     
     return redirect(url_for('ingresos.index'))

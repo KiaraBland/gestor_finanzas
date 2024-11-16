@@ -77,6 +77,7 @@
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Agregar</button>
         </div>
+
       </form>
     </div>
   </div>
@@ -117,6 +118,9 @@
           <td>
             <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-default{{egresos.id}}">
               <i class="fas fa-pencil-alt"></i> Editar
+            </a>
+            <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-replicar{{egresos.id}}">
+              <i class="fas fa-copy"></i> Replicar
             </a>
           </td>
         </tr>
@@ -173,10 +177,23 @@
             </div>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="habitual" id="habitual">
-            <label class="form-check-label" for="flexRadioDefault1">
-              Habitual
-            </label>
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label">¿Es habitual?</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
+                  <label class="form-check-label" for="habitual_si">
+                    Sí
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
+                  <label class="form-check-label" for="habitual_no">
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
           
         </div>
@@ -189,6 +206,81 @@
   </div>
 </div>
 {% endfor %}
-
+{% for egresos in egresos %}
+<div class="modal fade" id="modal-replicar{{egresos.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Replicar egreso</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/replicaregresos" method="post">
+        <div class="modal-body">
+          <!-- Campo Divisa -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="divisa" class="form-label">Divisa</label>
+              <select class="form-select" name="divisa" id="divisa">
+                {% for divisa in divisa %}
+                  <option value="{{divisa.id}}" {% if egresos.divisa_id == divisa.id %}selected{% endif %}>{{divisa.nombre}} {{divisa.simbolo}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <!-- Campo Categoría -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="categoria" class="form-label">Categoría</label>
+              <select class="form-select" name="categoria" id="categoria">
+                {% for categoria in categoria %}
+                  <option value="{{categoria.id}}" {% if egresos.categoria_id == categoria.id %}selected{% endif %}>{{categoria.nombre}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <!-- Campo Cantidad -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="cantidad" class="form-label">Cantidad</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad" value="{{egresos.cantidad}}" required min="1">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="fecha_pago" class="form-label">Fecha de pago</label>
+              <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="{{egresos.fecha_pago}}" required min="1">
+            </div>
+          </div>
+          <div class="form-check">
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label">¿Es habitual?</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
+                  <label class="form-check-label" for="habitual_si">
+                    Sí
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
+                  <label class="form-check-label" for="habitual_no">
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
+           
+          </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Replicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 {% endblock %}

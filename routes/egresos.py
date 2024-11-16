@@ -54,6 +54,25 @@ def egresoscrear():
                 "fecha":fecha}
         )
         db.session.commit()  # Confirmar cambios en la base de datos
+
+        categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+        concepto=categorianombre[1]
+        db.session.execute(
+            text("INSERT INTO movimientos (usuario_id,divisa_id,cantidad,concepto,tipo) VALUES (:usuario_id,:divisa_id,:cantidad,:concepto,:tipo)"),
+            {"usuario_id":session['usuario_id'],
+                "divisa_id":divisa,
+                "cantidad":cantidad,
+                "concepto":concepto,
+                "tipo":"egreso"}
+        )
+        db.session.commit() 
+
+        
+
         flash("Registro exitoso. .", "success")
         return redirect( url_for('egresos.index') )
     
@@ -75,6 +94,7 @@ def actualizar_egreso(id):
         cantidad = request.form['cantidad']
         divisa = request.form['divisa']
         categoria = request.form['categoria']
+        habitual= request.form['habitual']
         fecha_pago = request.form['fecha_pago']
 
         # Validación de los campos
@@ -86,13 +106,14 @@ def actualizar_egreso(id):
         db.session.execute(
             text("""
                 UPDATE egresos
-                SET categoria_id = :categoria_id, divisa_id = :divisa_id, cantidad = :cantidad, fecha_pago = :fecha_pago
+                SET categoria_id = :categoria_id, divisa_id = :divisa_id, cantidad = :cantidad, habitual = :habitual, fecha_pago = :fecha_pago
                 WHERE id = :id
             """),
             {
                 "categoria_id": categoria,
                 "divisa_id": divisa,
                 "cantidad": cantidad,
+                "habitual": habitual,
                 "fecha_pago": fecha_pago,
                 "id": id
             }
@@ -101,4 +122,51 @@ def actualizar_egreso(id):
 
         flash("Egreso actualizado exitosamente.", "success")
         return redirect(url_for('egresos.index'))
+    
+@egresos.route('/replicaregresos',methods=["POST", "GET"])
+@login_required
+def egresosreplicar():
+    
+     if request.method == 'POST':
+        # Capturar datos del formulario
+        cantidad = request.form['cantidad']
+        divisa = request.form['divisa']
+        categoria = request.form['categoria']
+        habitual= request.form['habitual']
+        fecha_pago = request.form['fecha_pago']
+
+        fecha = datetime.date.today()
+        if not cantidad or not divisa or not categoria:
+                flash("Todos los campos son obligatorios.", "error")
+                return redirect(url_for('egresos.crearegresos'))
+        # Insertar el nuevo usuario en la base de datos
+        db.session.execute(
+            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,fecha) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:fecha)"),
+            {"categoria_id": categoria, 
+                "divisa_id": divisa,
+                "usuario_id":session['usuario_id'],
+                "cantidad":cantidad,
+                "habitual":habitual,
+                "fecha_pago":fecha_pago,
+                "fecha":fecha}
+        )
+        db.session.commit()  # Confirmar cambios en la base de datos
+
+        categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+        concepto=categorianombre[1]
+        db.session.execute(
+            text("INSERT INTO movimientos (usuario_id,divisa_id,cantidad,concepto,tipo) VALUES (:usuario_id,:divisa_id,:cantidad,:concepto,:tipo)"),
+            {"usuario_id":session['usuario_id'],
+                "divisa_id":divisa,
+                "cantidad":cantidad,
+                "concepto":concepto,
+                "tipo":"egreso"}
+        )
+        db.session.commit() 
+        flash("Registro replicado exitosamente. .", "success")
+        return redirect( url_for('egresos.index') )
 

@@ -49,7 +49,7 @@
       </div>
       <div class="col-lg-6 col-md-12 mb-4">
         <div class="chart-container" style="position: relative; height:40vh; width:100%">
-         
+            <canvas id="graficaIngresosPorCategoria"></canvas>
         </div>
       </div>
     </div>
@@ -234,13 +234,73 @@
     // Cargar los datos iniciales
     cargarDatosEgresosPorCategoria();
 }
+function inicializarGraficoIngresosPorCategoria() {
+    const ctx = document.getElementById('graficaIngresosPorCategoria').getContext('2d');
+
+    // Crear el gráfico de pastel con Chart.js
+    const graficoIngresos = new Chart(ctx, {
+        type: 'doughnut',  // Tipo de gráfico: Pastel (pie)
+        data: {
+            labels: [], // Etiquetas que se rellenarán con las categorías
+            datasets: [{
+                label: 'Egresos por Categoría',
+                data: [], // Datos que se rellenarán con los totales de cada categoría
+                backgroundColor: [
+                    // Puedes agregar los colores de fondo aquí, por ejemplo:
+                    '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#F2FF33'
+                ],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return `${tooltipItem.label}: $${tooltipItem.raw}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Función para actualizar el gráfico con los datos de la API
+    function actualizarGraficoIngresos(data) {
+        const etiquetas = data.map(d => d.categoria_nombre); // Obtener las categorías
+        const cantidades = data.map(d => d.total); // Obtener los totales
+
+        // Actualizamos los datos del gráfico
+        graficoIngresos.data.labels = etiquetas;
+        graficoIngresos.data.datasets[0].data = cantidades;
+
+        // Actualizamos el gráfico
+        graficoIngresos.update();
+    }
+
+    // Función para cargar los datos de la API
+    function cargarDatosIngresosPorCategoria() {
+        fetch('/datos/ingresos_por_categoria')
+            .then(response => response.json())
+            .then(data => {
+                actualizarGraficoIngresos(data);  // Llamar a la función para actualizar el gráfico
+            })
+            .catch(error => console.error('Error al obtener los datos:', error));
+    }
+
+    // Cargar los datos iniciales
+    cargarDatosIngresosPorCategoria();
+}
 
     document.addEventListener('DOMContentLoaded', () => {
         inicializarGraficoIngresos();
         inicializarGraficoEgresos();
-   
+        inicializarGraficoIngresosPorCategoria();
         inicializarGraficoEgresosPorCategoria();
     });
+
   
 
 </script>

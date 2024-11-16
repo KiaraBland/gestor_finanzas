@@ -44,7 +44,7 @@ def actualizar_perfil():
     # Si existe un usuario con el mismo correo o teléfono
     if existente:
         flash("El correo o teléfono ya están registrados por otro usuario.", "error")
-        return redirect(url_for('usuarios.perfil'))
+        return redirect(url_for('categoria.index'))
 
     # Realizar la actualización si no existe ningún conflicto
     db.session.execute(
@@ -54,7 +54,7 @@ def actualizar_perfil():
     db.session.commit()
 
     flash("Perfil actualizado exitosamente.", "success")
-    return redirect(url_for('usuarios.perfil'))
+    return redirect(url_for('categoria.index'))
 
 @usuarios.route('/auth/login', methods=['GET', 'POST'])
 def login():
