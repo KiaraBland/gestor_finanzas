@@ -10,7 +10,22 @@ from routes.egresos import egresos
 from routes.categoria import categoria
 from utils.helper import login_required
 import logging
+from dotenv import load_dotenv
+import os
+from flask_mail import Mail, Message
+load_dotenv()
+
 app = Flask(__name__)
+
+#configuracion de envio de correo 
+app.config['MAIL_SERVER']= 'smtp.gmail.com'
+app.config['MAIL_PORT']= 587
+app.config['MAIL_USERNAME']= os.environ["GMAIL_EMAIL"]
+app.config['MAIL_PASSWORD']= os.environ["GMAIL_PASSWORD"]
+app.config['MAIL_USE_TLS']= True
+app.config['MAIL_USE_SSL']= False
+app.config['MAIL_DEFAULT_SENDER']= 'smtp,gmail.com'
+
 
 # settings
 app.secret_key = '12345678'
@@ -24,7 +39,18 @@ db.init_app(app)
 
 # Configuración del registro
 logging.basicConfig(level=logging.INFO)
+mail = Mail(app)
 
+@app.route("/correo")
+def correo():
+    msg = Message(
+        subject='Hello from the other side!', 
+        sender= os.environ["GMAIL_EMAIL"],  # Ensure this matches MAIL_USERNAME
+        recipients=['kiarablandon75@gmail.com']  # Replace with actual recipient's email
+    )
+    msg.body = "Hey, sending you this email from my Flask app, let me know if it works."
+    mail.send(msg)
+    return "Message sent!"
 @app.route('/')
 @login_required
 def index():
@@ -52,5 +78,9 @@ app.register_blueprint(egresos)
 app.register_blueprint(transacciones)
 app.register_blueprint(categoria)
 
+
+
+
+           
 
 
