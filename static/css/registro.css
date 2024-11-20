@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(135deg, #0f642e 25%, #087e04 100%);
+    background: linear-gradient(135deg, #2a9c5b 50%, #088634 80%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -15,7 +15,7 @@ body {
     width: 100%;
 }
 .registro-encabezado {
-    background-color: #065322;
+    background-color: #1e783f;
     color: white;
     padding: 30px 20px;
     text-align: center;
@@ -31,7 +31,7 @@ body {
     bottom: -20px;
     left: 50%;
     transform: translateX(-50%);
-    border-top: 20px solid #065322;
+    border-top: 20px solid #0e793b;
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
 }
@@ -45,7 +45,7 @@ body {
     border-radius: 10px;
 }
 .btn-registro {
-    background-color: #065322;
+    background-color: #0e793b;
     border: none;
     border-radius: 10px;
     padding: 12px;
@@ -54,7 +54,7 @@ body {
     transition: all 0.3s ease;
 }
 .btn-registro:hover {
-    background-color: #62db81;
+    background-color: #1a6636;
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -63,7 +63,7 @@ body {
     justify-content: space-around;
     margin-top: 30px;
     font-size: 25px;
-    color: #00a637;
+    color: #10843f;
 }
 .link-login {
     text-align: center;

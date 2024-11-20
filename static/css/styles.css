@@ -4,6 +4,10 @@
     --text-color: #484848;
     --background-color: #50e080;
 }
+body{
+    background-color: #d7d4d4;
+}
+
 li{
     list-style-type: none
 }
@@ -27,6 +31,10 @@ li{
 .dropdown-item:active {
     background-color: #26964b;
 }
+.iconos-financieros {
+   
+    color: #10843f;
+    }
 .notification-badge {
     position: absolute;
     top: 0;

@@ -22,7 +22,7 @@ def index():
 ).fetchall()
 
     divisa=db.session.execute(text("SELECT * FROM divisa")).fetchall()
-    categoria=db.session.execute(text("SELECT * FROM categoria")).fetchall()
+    categoria=db.session.execute(text("SELECT * FROM categoria WHERE tipo=1")).fetchall()
     return render_template('Ingresos/index.html',ingresos=ingresos,divisa=divisa,categoria=categoria)
 
 @ingresos.route('/crearingresos',methods=["POST", "GET"])

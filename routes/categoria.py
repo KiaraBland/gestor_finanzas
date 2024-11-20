@@ -29,8 +29,7 @@ def categoriacrear():
         nombre = request.form['nombre']
       
         descripcion = request.form['descripcion']
-
-
+        tipo= request.form['habitual']
         # Verificar si la categoria ya existe por el nombre
         existente = db.session.execute(
             text("SELECT * FROM categoria WHERE nombre = :nombre"),
@@ -44,9 +43,10 @@ def categoriacrear():
 
         # Insertar el nuevo usuario en la base de datos
         db.session.execute(
-            text("INSERT INTO categoria (nombre, descripcion) VALUES (:nombre, :descripcion)"),
+            text("INSERT INTO categoria (nombre, descripcion,tipo) VALUES (:nombre, :descripcion,:tipo)"),
             {"nombre": nombre, 
-                "descripcion": descripcion}
+                "descripcion": descripcion,
+                    "tipo": tipo}
         )
         db.session.commit()  # Confirmar cambios en la base de datos
         flash("Registro exitoso. .", "success")

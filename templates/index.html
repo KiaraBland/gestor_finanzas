@@ -8,56 +8,58 @@
 
 
     <div class="col-6">
-        <div class="card">
+        <div class="card  {{ 'text-bg-danger' if saldototalencordoba < 0 else 'text-bg-success' }}">
             <div class="card-body">
+               
                 <h5 class="card-title">Saldo Total en córdobas</h5>
-                <p class="card-text {{ 'text-danger' if saldototalencordoba < 0 else 'text-success' }}">
+                <h4 class=" text-white ">
                     C${{ saldototalencordoba }}
-                </p>
+                </h4>
 
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card">
+        <div class="card {{ 'text-bg-danger' if saldototalendolares < 0 else 'text-bg-success' }}">
             <div class="card-body">
+                
                 <h5 class="card-title">Saldo Total en dólares</h5>
-                <p class="card-text {{ 'text-danger' if saldototalendolares < 0 else 'text-success' }}">
-                    C${{ saldototalendolares }}
-                </p>
+                <h4 class="text-white ">
+                    ${{ saldototalendolares }}
+                </h4>
 
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card">
+        <div class="card {{ 'text-bg-danger' if ingresosencordobas['cantidad'] < 0 else 'text-bg-success' }}">
             <div class="card-body">
                 <h5 class="card-title">Ingresos en córdobas</h5>
-                <p class="card-text text-success">c$ {{ingresosencordobas["cantidad"]}}</p>
+                <h4 class=" text-white">C$ {{ingresosencordobas["cantidad"]}}</h4>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card">
+        <div class="card {{ 'text-bg-danger' if ingresosendolar['cantidad'] < 0 else 'text-bg-success' }}">
             <div class="card-body">
                 <h5 class="card-title">Ingresos en dólares</h5>
-                <p class="card-text text-success">$ {{ingresosendolar["cantidad"]}}</p>
+                <h4 class="text white">$ {{ingresosendolar["cantidad"]}}</h4>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card">
+        <div class="card {{ 'text-bg-danger' if egresosencordobas['cantidad'] < 0 else 'text-bg-success' }}">
             <div class="card-body">
                 <h5 class="card-title">Gastos en córdobas</h5>
-                <p class="card-text text-danger">c$ {{egresosencordobas["cantidad"]}}</p>
+                <h4 class="text white">C$ {{egresosencordobas["cantidad"]}}</h4>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card">
+        <div class="card {{ 'text-bg-danger' if egresosendolares['cantidad'] < 0 else 'text-bg-success' }}">
             <div class="card-body">
                 <h5 class="card-title">Gastos en dólares</h5>
-                <p class="card-text text-danger">$ {{egresosendolares["cantidad"]}}</p>
+                <h4 class="text white">$ {{egresosendolares["cantidad"]}}</h4>
             </div>
         </div>
     </div>
