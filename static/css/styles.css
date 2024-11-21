@@ -4,10 +4,103 @@
     --text-color: #484848;
     --background-color: #50e080;
 }
-body{
-    background-color: #d7d4d4;
+body {
+    background-color: #f8f9fa;
 }
-
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.card-body {
+    padding: 1.5rem;
+}
+.card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+.card-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+.icon-bg {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 3rem;
+    opacity: 0.2;
+}
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+.transaction-details {
+    flex-grow: 1;
+}
+.transaction-amount {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.card-title {
+    color: #6c757d;
+    font-weight: 600;
+}
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.5rem;
+    transition: background-color 0.3s ease;
+}
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+.list-group-item:first-child {
+    border-top: none;
+}
+.list-group-item:last-child {
+    border-bottom: none;
+}
+.navbar {
+    transition: all 0.3s ease;
+}
+.navbar-brand {
+    font-size: 1.5rem;
+}
+.nav-link {
+    font-weight: 500;
+}
+.dropdown-menu {
+    border: none;
+    border-radius: 0.5rem;
+}
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        padding-top: 1rem;
+    }
+    .nav-item {
+        margin-bottom: 0.5rem;
+    }
+}
 li{
     list-style-type: none
 }
@@ -22,7 +115,7 @@ li{
     color: #495057;
 }
 .nav-link:hover, .dropdown-toggle:hover {
-    color: #0d6efd;
+    color: #43c579;
 }
 .dropdown-menu {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);

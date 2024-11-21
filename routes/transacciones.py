@@ -19,9 +19,7 @@ def index():
     egresos_cordobas = egresosencordobas[0] or 0
     ingresos_dolares = ingresosendolar[0] or 0
     egresos_dolares = egresosendolares[0] or 0
-    transacciones = db.session.execute(text("SELECT * FROM movimientos where  usuario_id=:usuario_id limit 3"),{"usuario_id": session['usuario_id']}).fetchall()
-    print(transacciones)
-    
+    transacciones = db.session.execute(text("SELECT * FROM movimientos where  usuario_id=:usuario_id    ORDER BY fecha DESC limit 3"),{"usuario_id": session['usuario_id']}).fetchall()
     
     # Calcular el saldo total en córdobas
     saldototalencordoba = int(ingresos_cordobas) - int(egresos_cordobas)

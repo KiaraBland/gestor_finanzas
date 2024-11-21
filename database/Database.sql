@@ -12,7 +12,8 @@ CREATE TABLE `usuarios` (
 CREATE TABLE `Categoria` (
   `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
-  `descripcion` VARCHAR(255)
+  `descripcion` VARCHAR(255),
+     `tipo` INT
 );
 
 CREATE TABLE `divisa` (
@@ -52,6 +53,7 @@ CREATE TABLE `egresos` (
   `habitual` INTEGER NOT NULL,
   `fecha_pago` DATE,
   `fecha` DATE,
+
   FOREIGN KEY (`categoria_id`) REFERENCES `Categoria` (`id`),
   FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   FOREIGN KEY (`divisa_id`) REFERENCES `divisa` (`id`)

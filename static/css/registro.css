@@ -7,7 +7,7 @@ body {
     font-family: 'Arial', sans-serif;
 }
 .registro-contenedor {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgb(255, 255, 255);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 0 20px rgba(64, 245, 160, 0.2);

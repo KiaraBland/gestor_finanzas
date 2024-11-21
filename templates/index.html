@@ -4,87 +4,90 @@
 
 {% block content %}
 
-<div class="row g-3">
-
-
-    <div class="col-6">
-        <div class="card  {{ 'text-bg-danger' if saldototalencordoba < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-               
-                <h5 class="card-title">Saldo Total en córdobas</h5>
-                <h4 class=" text-white ">
-                    C${{ saldototalencordoba }}
-                </h4>
-
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card {{ 'text-bg-danger' if saldototalendolares < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-                
-                <h5 class="card-title">Saldo Total en dólares</h5>
-                <h4 class="text-white ">
-                    ${{ saldototalendolares }}
-                </h4>
-
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card {{ 'text-bg-danger' if ingresosencordobas['cantidad'] < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-                <h5 class="card-title">Ingresos en córdobas</h5>
-                <h4 class=" text-white">C$ {{ingresosencordobas["cantidad"]}}</h4>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card {{ 'text-bg-danger' if ingresosendolar['cantidad'] < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-                <h5 class="card-title">Ingresos en dólares</h5>
-                <h4 class="text white">$ {{ingresosendolar["cantidad"]}}</h4>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card {{ 'text-bg-danger' if egresosencordobas['cantidad'] < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-                <h5 class="card-title">Gastos en córdobas</h5>
-                <h4 class="text white">C$ {{egresosencordobas["cantidad"]}}</h4>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card {{ 'text-bg-danger' if egresosendolares['cantidad'] < 0 else 'text-bg-success' }}">
-            <div class="card-body">
-                <h5 class="card-title">Gastos en dólares</h5>
-                <h4 class="text white">$ {{egresosendolares["cantidad"]}}</h4>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card mt-4">
-    <div class="card-body">
-        <h5 class="card-title mb-3">Transacciones Recientes</h5>
-        <ul class="list-group list-group-flush">
-            {% for transacciones in transacciones %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="fw-medium">{{transacciones.concepto}}</div>
-                    <small class="text-muted">{{transacciones.fecha}}</small>
+<div class="container py-5">
+    <h1 class="text-center mb-5">Inicio</h1>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if saldototalencordoba < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Saldo Total en Córdobas</h5>
+                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(saldototalencordoba) }}</p>
+                    <i class="fas fa-wallet icon-bg"></i>
                 </div>
-             
-                <span class="badge  {{ 'bg-danger' if transacciones.tipo == 'egreso' else 'bg-success' }} rounded-pill">$25.00</span>
-             
-            </li>
-            {% endfor %}
-        </ul>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if saldototalendolares < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Saldo Total en Dólares</h5>
+                    <p class="card-amount mb-0">${{ "{:,.2f}".format(saldototalendolares) }}</p>
+                    <i class="fas fa-dollar-sign icon-bg"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if ingresosencordobas['cantidad'] < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Ingresos en Córdobas</h5>
+                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(ingresosencordobas["cantidad"]) }}</p>
+                    <i class="fas fa-arrow-up icon-bg"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if ingresosendolar['cantidad'] < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Ingresos en Dólares</h5>
+                    <p class="card-amount mb-0">${{ "{:,.2f}".format(ingresosendolar["cantidad"]) }}</p>
+                    <i class="fas fa-arrow-up icon-bg"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if egresosencordobas['cantidad'] < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Gastos en Córdobas</h5>
+                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(egresosencordobas["cantidad"]) }}</p>
+                    <i class="fas fa-arrow-down icon-bg"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 {{ 'bg-danger' if egresosendolares['cantidad'] < 0 else 'bg-success' }} text-white">
+                <div class="card-body position-relative">
+                    <h5 class="card-title">Gastos en Dólares</h5>
+                    <p class="card-amount mb-0">${{ "{:,.2f}".format(egresosendolares["cantidad"]) }}</p>
+                    <i class="fas fa-arrow-down icon-bg"></i>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 
+<div class="container py-5">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Transacciones Recientes</h5>
+            <ul class="list-group list-group-flush">
+                {% for transaccion in transacciones %}
+                <li class="list-group-item d-flex align-items-center">
+                    <div class="transaction-icon bg-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} text-white rounded-circle p-2 me-3">
+                        <i class="fas fa-{{ 'arrow-down' if transaccion.tipo == 'egreso' else 'arrow-up' }}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="fw-medium">{{ transaccion.concepto }}</div>
+                        <small class="text-muted">{{ transaccion.fecha }}</small>
+                    </div>
+                    <div class="transaction-amount text-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} ms-auto">
+                        {{ '-' if transaccion.tipo == 'egreso' else '+' }}${{ "{:,.2f}".format(transaccion.cantidad) }}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 
 
 
