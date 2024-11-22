@@ -1,0 +1,197 @@
+
+{% extends "Layout/base.html" %}
+
+{% block title %}Calendario de pago - FinanzApp{% endblock %}
+
+{% block content %}
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet">
+  <style>
+
+        .calendar-container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        .fc-toolbar-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .fc-button-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .fc-button-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .fc-daygrid-day-number {
+            font-size: 0.8em;
+        }
+        .fc-daygrid-day-top {
+            padding: 2px;
+        }
+        .fc-daygrid-day-events {
+            margin-top: 0;
+        }
+        .fc-event {
+            border-radius: 2px;
+            padding: 1px 2px;
+            font-size: 0.7em;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .fc-event:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .fc-day-today {
+            background-color: #e9ecef !important;
+        }
+        .fc-day-sat, .fc-day-sun {
+            background-color: #f8f9fa;
+        }
+        .custom-button {
+            transition: all 0.3s ease;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+        }
+        .custom-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .fc-header-toolbar {
+                flex-direction: column;
+            }
+            .fc-toolbar-chunk {
+                margin-bottom: 8px;
+            }
+            .custom-button {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+  </style>
+<div class="container">
+  <div class="calendar-container">
+      <div id="calendar"></div>
+      <div class="mt-4">
+          <button id="verEgrosPorPagarBtn" class="btn btn-primary custom-button">
+              <i class="bi bi-cash-coin me-2"></i>Ver Egresos Pendientes
+          </button>
+          <button id="verEgresosDelMesBtn" class="btn btn-secondary custom-button">
+              <i class="bi bi-calendar-check me-2"></i>Ver Egresos del Mes
+          </button>
+      </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+
+        },
+        buttonText: {
+                    today: 'Hoy',
+                   
+                },
+
+        eventClick: function (info) {
+          alert('Evento: ' + info.event.title);
+        },
+        dateClick: function (info) {
+          alert('Fecha seleccionada: ' + info.dateStr);
+        }
+
+
+      });
+      calendar.render();
+
+      document.getElementById('verEgrosPorPagarBtn').addEventListener('click', function () {
+        fetch('/egresos_por_pagar')
+          .then(response => response.json())
+          .then(data => {
+            let events = data.map(egreso => {
+              return {
+                title: `Pago: ${egreso.cantidad} ${egreso.divisa} Categoría: ${egreso.categoria} - Habitual: ${egreso.habitual ? 'Sí' : 'No'}`,
+                start: new Date(egreso.fecha_pago).toISOString(),  // Ensure the date is in ISO format
+                description: `Categoría: ${egreso.categoria} - Habitual: ${egreso.habitual ? 'Sí' : 'No'}`,
+                extendedProps: {
+                  simbolo: egreso.simbolo  // Add the currency symbol as extendedProps
+                }
+              };
+            });
+
+
+            calendar.removeAllEvents();  // Clear all existing events
+
+            if (events.length > 0) {
+              calendar.addEventSource(events);  // Use addEventSource to add the list of events
+            } else {
+              alert('No hay egresos pendientes por pagar.');
+            }
+          })
+          .catch(error => {
+            console.error('Error al obtener los egresos pendientes:', error); // Log the error
+            alert('Error al obtener los egresos pendientes');
+          });
+      });
+
+
+
+      document.getElementById('verEgresosDelMesBtn').addEventListener('click', function () {
+        fetch('/egresos_mes')  // Este endpoint lo necesitas definir para obtener los egresos del mes
+          .then(function (response) {
+            return response.json();  // Convierte la respuesta a formato JSON
+          })
+          .then(function (data) {
+            let events = data.map(egreso => {
+              // Convertir la fecha en formato "Sat, 30 Nov 2024 00:00:00 GMT" a un formato ISO
+              let fecha = new Date(egreso.fecha_pago).toISOString();  // Esto dará un formato como '2024-11-30T00:00:00.000Z'
+
+              return {
+                title: `Pago: ${egreso.cantidad} ${egreso.divisa} Categoría: ${egreso.categoria} - Habitual: ${egreso.habitual ? 'Sí' : 'No'}`,
+                start: fecha,  // Usar la fecha en formato ISO
+                description: `Categoría: ${egreso.categoria} - Habitual: ${egreso.habitual ? 'Sí' : 'No'}`,
+                extendedProps: {
+                  simbolo: egreso.simbolo  // Se agrega el símbolo de la divisa
+                }
+              };
+            });
+
+            calendar.removeAllEvents();  // Limpiar el calendario antes de agregar los nuevos eventos
+
+            if (events.length > 0) {
+              // Usamos 'addEventSource' para agregar todos los eventos de una vez
+              calendar.addEventSource(events);
+            } else {
+              alert('No hay egresos para este mes.');
+            }
+          })
+          .catch(function (error) {  // Captura errores de la promesa
+            console.error('Error al obtener los egresos del mes:', error);  // Imprime el error en la consola
+            alert('Error al obtener los egresos del mes');
+          });
+      });
+
+    });
+  </script>
+{% endblock %}

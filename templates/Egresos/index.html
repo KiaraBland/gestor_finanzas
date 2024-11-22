@@ -13,7 +13,7 @@
 
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar nuevo egreso</h1>
@@ -21,57 +21,64 @@
       </div>
       <form action="/crearegresos" method="post">
         <div class="modal-body">
+          <div class="container">
+            <div class="row mb-3">
+              <div class="col-12 col-md-6">
+                <label for="divisa" class="form-label">Divisa</label>
+                <select class="form-select" name="divisa" id="divisa">
+                  {% for divisa in divisa %}
+                  <option value="{{ divisa.id }}">{{ divisa.nombre }} {{ divisa.simbolo }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select class="form-select" name="categoria" id="categoria">
+                  {% for categoria in categoria %}
+                  <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
 
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="divisa" class="form-label">Divisa</label>
-              <select class="form-select" name="divisa" id="divisa">
-                {% for divisa in divisa %}
-                <option value="{{divisa.id}}">{{divisa.nombre}} {{divisa.simbolo}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="categoria" class="form-label">Categoría</label>
-              <select class="form-select" name="categoria" id="categoria">
-                {% for categoria in categoria %}
-                <option value="{{categoria.id}}">{{categoria.nombre}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="cantidad" class="form-label">Cantidad</label>
-              <input type="number" class="form-control" id="cantidad" name="cantidad" required min="1">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="fecha_pago" class="form-label">Fecha de pago</label>
-              <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" required min="1">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label class="form-label">¿Es habitual?</label>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
-                <label class="form-check-label" for="habitual_si">
-                  Sí
-                </label>
+            <!-- Cantidad y Fecha de pago -->
+            <div class="row mb-3">
+              <div class="col-12 col-md-6">
+                <label for="cantidad" class="form-label">Cantidad</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" required min="1">
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
-                <label class="form-check-label" for="habitual_no">
-                  No
-                </label>
+              <div class="col-12 col-md-6">
+                <label for="fecha_pago" class="form-label">Fecha de pago</label>
+                <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" required>
+              </div>
+            </div>
+
+            <!-- Estado y ¿Es habitual? -->
+            <div class="row mb-3">
+              <div class="col-12 col-md-6">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" name="estado" id="estado">
+                  <option value=1>Pendiente</option>
+                  <option value=0>Cancelado</option>
+
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">¿Es habitual?</label>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
+                    <label class="form-check-label" for="habitual_si">Sí</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
+                    <label class="form-check-label" for="habitual_no">No</label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -96,8 +103,9 @@
           <th scope="col">Fecha</th>
           <th scope="col">Fecha de pago</th>
           <th scope="col">Habitual</th>
+          <th scope="col">Estado</th>
           <th scope="col">Acciones</th>
-          
+
         </tr>
       </thead>
       <tbody>
@@ -110,18 +118,63 @@
           <td>{{egresos.fecha}}</td>
           <td>{{egresos.fecha_pago}}</td>
           <td>
+            <span class="badge {{ 'bg-success' if egresos.estado == 1 else 'bg-danger' }}">
+              {{ 'Cancelado' if egresos.estado == 1 else 'Por pagar' }}
+            </span>
+          </td>
+
+          <td>
             <span class="badge {{ 'bg-success' if egresos.habitual == 1 else 'bg-secondary' }}">
               {{ 'Habitual' if egresos.habitual == 1 else 'No Habitual' }}
             </span>
           </td>
-          
+
           <td>
-            <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-default{{egresos.id}}">
-              <i class="fas fa-pencil-alt"></i> Editar
-            </a>
-            <a class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-replicar{{egresos.id}}">
-              <i class="fas fa-copy"></i> Replicar
-            </a>
+            <div class="d-flex justify-content-end align-items-center gap-2">
+              <!-- Botón Editar -->
+              <a class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal-default{{egresos.id}}">
+                <i class="fas fa-pencil-alt"></i> Editar
+              </a>
+            
+              <!-- Botón Replicar -->
+              <a class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modal-replicar{{egresos.id}}">
+                <i class="fas fa-copy"></i> Replicar
+              </a>
+            
+              <!-- Botón Cancelar Estado -->
+              {% if egresos.estado != 1 %}
+              <a class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modal-cancelar{{egresos.id}}">
+                <i class="fas fa-ban"></i> Cancelar
+              </a>
+              {% endif %}
+            </div>
+            
+           
+            
+           
+            </div>
+            
+            <!-- Modal Cancelar Estado -->
+            <div class="modal fade" id="modal-cancelar{{egresos.id}}" tabindex="-1" aria-labelledby="modalCancelarLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalCancelarLabel">Cancelar Estado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Estás seguro de que deseas cancelar este egreso?</p>
+                    <form method="POST" action="/cancelaregreso/{{egresos.id}}">
+                      <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-danger">Cancelar</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
           </td>
         </tr>
         {% endfor %}
@@ -132,8 +185,9 @@
 
 <!-- Modal dinámico para cada egreso -->
 {% for egresos in egresos %}
-<div class="modal fade" id="modal-default{{egresos.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="modal-default{{egresos.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Editar egreso</h1>
@@ -141,61 +195,77 @@
       </div>
       <form action="/actualizaregreso/{{egresos.id}}" method="post">
         <div class="modal-body">
-          <!-- Campo Divisa -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="divisa" class="form-label">Divisa</label>
-              <select class="form-select" name="divisa" id="divisa">
-                {% for divisa in divisa %}
-                  <option value="{{divisa.id}}" {% if egresos.divisa_id == divisa.id %}selected{% endif %}>{{divisa.nombre}} {{divisa.simbolo}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <!-- Campo Categoría -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="categoria" class="form-label">Categoría</label>
-              <select class="form-select" name="categoria" id="categoria">
-                {% for categoria in categoria %}
-                  <option value="{{categoria.id}}" {% if egresos.categoria_id == categoria.id %}selected{% endif %}>{{categoria.nombre}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <!-- Campo Cantidad -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="cantidad" class="form-label">Cantidad</label>
-              <input type="number" class="form-control" id="cantidad" name="cantidad" value="{{egresos.cantidad}}" required min="1">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="fecha_pago" class="form-label">Fecha de pago</label>
-              <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="{{egresos.fecha_pago}}" required min="1">
-            </div>
-          </div>
-          <div class="form-check">
+          <div class="container">
             <div class="row mb-3">
-              <div class="col-12">
+              <!-- Campo Divisa -->
+              <div class="col-12 col-md-6">
+                <label for="divisa" class="form-label">Divisa</label>
+                <select class="form-select" name="divisa" id="divisa">
+                  {% for divisa in divisa %}
+                  <option value="{{ divisa.id }}" {% if egresos.divisa_id == divisa.id %}selected{% endif %}>
+                    {{ divisa.nombre }} {{ divisa.simbolo }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <!-- Campo Categoría -->
+              <div class="col-12 col-md-6">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select class="form-select" name="categoria" id="categoria">
+                  {% for categoria in categoria %}
+                  <option value="{{ categoria.id }}" {% if egresos.categoria_id == categoria.id %}selected{% endif %}>
+                    {{ categoria.nombre }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <!-- Campo Cantidad -->
+              <div class="col-12 col-md-6">
+                <label for="cantidad" class="form-label">Cantidad</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                       value="{{ egresos.cantidad | default('') }}" required min="1">
+              </div>
+          
+              <!-- Campo Fecha de pago -->
+              <div class="col-12 col-md-6">
+                <label for="fecha_pago" class="form-label">Fecha de pago</label>
+                <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
+                       value="{{ egresos.fecha_pago | default('') }}" required>
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <!-- Campo Estado -->
+              <div class="col-12 col-md-6">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" name="estado" id="estado">
+                  <option value="1" {% if egresos.estado == 1 %}selected{% endif %}>Pendiente</option>
+                  <option value="0" {% if egresos.estado == 0 %}selected{% endif %}>Cancelado</option>
+                </select>
+              </div>
+          
+              <!-- Campo ¿Es habitual? -->
+              <div class="col-12 col-md-6">
                 <label class="form-label">¿Es habitual?</label>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
-                  <label class="form-check-label" for="habitual_si">
-                    Sí
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
-                  <label class="form-check-label" for="habitual_no">
-                    No
-                  </label>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" 
+                           {% if egresos.habitual == 1 %}checked{% endif %}>
+                    <label class="form-check-label" for="habitual_si">Sí</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" 
+                           {% if egresos.habitual == 0 %}checked{% endif %}>
+                    <label class="form-check-label" for="habitual_no">No</label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -207,8 +277,9 @@
 </div>
 {% endfor %}
 {% for egresos in egresos %}
-<div class="modal fade" id="modal-replicar{{egresos.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="modal-replicar{{egresos.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Replicar egreso</h1>
@@ -216,60 +287,75 @@
       </div>
       <form action="/replicaregresos" method="post">
         <div class="modal-body">
-          <!-- Campo Divisa -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="divisa" class="form-label">Divisa</label>
-              <select class="form-select" name="divisa" id="divisa">
-                {% for divisa in divisa %}
-                  <option value="{{divisa.id}}" {% if egresos.divisa_id == divisa.id %}selected{% endif %}>{{divisa.nombre}} {{divisa.simbolo}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <!-- Campo Categoría -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="categoria" class="form-label">Categoría</label>
-              <select class="form-select" name="categoria" id="categoria">
-                {% for categoria in categoria %}
-                  <option value="{{categoria.id}}" {% if egresos.categoria_id == categoria.id %}selected{% endif %}>{{categoria.nombre}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <!-- Campo Cantidad -->
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="cantidad" class="form-label">Cantidad</label>
-              <input type="number" class="form-control" id="cantidad" name="cantidad" value="{{egresos.cantidad}}" required min="1">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="fecha_pago" class="form-label">Fecha de pago</label>
-              <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="{{egresos.fecha_pago}}" required min="1">
-            </div>
-          </div>
-          <div class="form-check">
+         
+          <div class="container">
             <div class="row mb-3">
-              <div class="col-12">
+              <!-- Campo Divisa -->
+              <div class="col-12 col-md-6">
+                <label for="divisa" class="form-label">Divisa</label>
+                <select class="form-select" name="divisa" id="divisa">
+                  {% for divisa in divisa %}
+                  <option value="{{ divisa.id }}" {% if egresos.divisa_id == divisa.id %}selected{% endif %}>
+                    {{ divisa.nombre }} {{ divisa.simbolo }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <!-- Campo Categoría -->
+              <div class="col-12 col-md-6">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select class="form-select" name="categoria" id="categoria">
+                  {% for categoria in categoria %}
+                  <option value="{{ categoria.id }}" {% if egresos.categoria_id == categoria.id %}selected{% endif %}>
+                    {{ categoria.nombre }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+          
+              <!-- Campo Cantidad -->
+              <div class="col-12 col-md-6">
+                <label for="cantidad" class="form-label">Cantidad</label>
+                <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                       value="{{ egresos.cantidad | default('') }}" required min="1">
+              </div>
+          
+              <!-- Campo Fecha de pago -->
+              <div class="col-12 col-md-6">
+                <label for="fecha_pago" class="form-label">Fecha de pago</label>
+                <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" 
+                       value="{{ egresos.fecha_pago | default('') }}" required>
+              </div>
+            </div>
+          
+            <div class="row mb-3">
+              <!-- Campo Estado -->
+              <div class="col-12 col-md-6">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" name="estado" id="estado">
+                  <option value="1" {% if egresos.estado == 1 %}selected{% endif %}>Pendiente</option>
+                  <option value="0" {% if egresos.estado == 0 %}selected{% endif %}>Cancelado</option>
+                </select>
+              </div>
+          
+              <!-- Campo ¿Es habitual? -->
+              <div class="col-12 col-md-6">
                 <label class="form-label">¿Es habitual?</label>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" required>
-                  <label class="form-check-label" for="habitual_si">
-                    Sí
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" required>
-                  <label class="form-check-label" for="habitual_no">
-                    No
-                  </label>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_si" value="1" 
+                           {% if egresos.habitual == 1 %}checked{% endif %}>
+                    <label class="form-check-label" for="habitual_si">Sí</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="habitual" id="habitual_no" value="0" 
+                           {% if egresos.habitual == 0 %}checked{% endif %}>
+                    <label class="form-check-label" for="habitual_no">No</label>
+                  </div>
                 </div>
               </div>
             </div>
-           
           </div>
           
         </div>

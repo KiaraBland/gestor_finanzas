@@ -6,12 +6,23 @@
 
 <div class="container py-5">
     <h1 class="text-center mb-5">Inicio</h1>
+    <div class="row mb-4">
+        <div class="col-12 text-end">
+            <a href="{{ url_for('asistente.ia') }}" class="btn  btn-primary me-2">
+                <i class="fas fa-comments"></i> Hablar con el Asistente
+            </a>
+            <a href="{{url_for('asistente.calendario')}}" class="btn  btn-secondary">
+                <i class="fas fa-calendar-alt"></i> Calendario de Pago
+            </a>
+        </div>
+    </div>
     <div class="row g-4">
         <div class="col-md-6 col-lg-4">
             <div class="card h-100 {{ 'bg-danger' if saldototalencordoba < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Saldo Total en Córdobas</h5>
-                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(saldototalencordoba) }}</p>
+                    <p class="card-amount mb-0">
+                        C${{ "{:,.2f}".format(saldototalencordoba | default(0)) }}</p>
                     <i class="fas fa-wallet icon-bg"></i>
                 </div>
             </div>
@@ -20,48 +31,54 @@
             <div class="card h-100 {{ 'bg-danger' if saldototalendolares < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Saldo Total en Dólares</h5>
-                    <p class="card-amount mb-0">${{ "{:,.2f}".format(saldototalendolares) }}</p>
+                    <p class="card-amount mb-0">
+                        ${{ "{:,.2f}".format(saldototalendolares | default(0)) }}</p>
                     <i class="fas fa-dollar-sign icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if ingresosencordobas['cantidad'] < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if ingresosencordobas < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Ingresos en Córdobas</h5>
-                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(ingresosencordobas["cantidad"]) }}</p>
+                    <p class="card-amount mb-0">
+                        C${{ "{:,.2f}".format(ingresosencordobas['cantidad'] | default(0)) }}</p>
                     <i class="fas fa-arrow-up icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if ingresosendolar['cantidad'] < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if ingresosendolar < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Ingresos en Dólares</h5>
-                    <p class="card-amount mb-0">${{ "{:,.2f}".format(ingresosendolar["cantidad"]) }}</p>
+                    <p class="card-amount mb-0">
+                        ${{ "{:,.2f}".format(ingresosendolar['cantidad'] | default(0)) }}</p>
                     <i class="fas fa-arrow-up icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if egresosencordobas['cantidad'] < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if egresosencordobas < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Gastos en Córdobas</h5>
-                    <p class="card-amount mb-0">C${{ "{:,.2f}".format(egresosencordobas["cantidad"]) }}</p>
+                    <p class="card-amount mb-0">
+                        C${{ "{:,.2f}".format(egresosencordobas['cantidad'] | default(0)) }}</p>
                     <i class="fas fa-arrow-down icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if egresosendolares['cantidad'] < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if egresosendolares < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Gastos en Dólares</h5>
-                    <p class="card-amount mb-0">${{ "{:,.2f}".format(egresosendolares["cantidad"]) }}</p>
+                    <p class="card-amount mb-0">
+                        ${{ "{:,.2f}".format(egresosendolares['cantidad'] | default(0)) }}</p>
                     <i class="fas fa-arrow-down icon-bg"></i>
                 </div>
             </div>
         </div>
     </div>
+    
 </div>
 
 
@@ -72,14 +89,16 @@
             <ul class="list-group list-group-flush">
                 {% for transaccion in transacciones %}
                 <li class="list-group-item d-flex align-items-center">
-                    <div class="transaction-icon bg-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} text-white rounded-circle p-2 me-3">
+                    <div
+                        class="transaction-icon bg-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} text-white rounded-circle p-2 me-3">
                         <i class="fas fa-{{ 'arrow-down' if transaccion.tipo == 'egreso' else 'arrow-up' }}"></i>
                     </div>
                     <div class="transaction-details">
                         <div class="fw-medium">{{ transaccion.concepto }}</div>
                         <small class="text-muted">{{ transaccion.fecha }}</small>
                     </div>
-                    <div class="transaction-amount text-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} ms-auto">
+                    <div
+                        class="transaction-amount text-{{ 'danger' if transaccion.tipo == 'egreso' else 'success' }} ms-auto">
                         {{ '-' if transaccion.tipo == 'egreso' else '+' }}${{ "{:,.2f}".format(transaccion.cantidad) }}
                     </div>
                 </li>
@@ -88,6 +107,7 @@
         </div>
     </div>
 </div>
+
 
 
 

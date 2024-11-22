@@ -1,0 +1,247 @@
+{% extends "Layout/base.html" %}
+
+{% block title %}Asistente - FinanzApp{% endblock %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #43c579;
+        --secondary-color: #00A699;
+        --text-color: #484848;
+        --background-color: #50e080;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.5;
+        padding-bottom: 70px;
+    }
+
+    .chat-container {
+        max-width: 600px;
+        margin: 20px auto;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .chat-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px;
+    }
+
+    .chat-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .chat-messages {
+        height: 250px;
+        overflow-y: auto;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+
+    .message {
+        max-width: 80%;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 18px;
+        clear: both;
+        font-size: 0.9rem;
+    }
+
+    .message.sent {
+        background-color: var(--primary-color);
+        color: white;
+        float: right;
+    }
+
+    .message.received {
+        background-color: white;
+        float: left;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .topic-buttons {
+        padding: 10px;
+        background-color: white;
+        border-top: 1px solid #EBEBEB;
+    }
+
+    .input-group {
+        padding: 15px;
+        background-color: white;
+        border-top: 1px solid #EBEBEB;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border: none;
+        font-weight: 500;
+    }
+    .small-buttons .btn {
+    font-size: 12px; /* Tamaño del texto */
+    padding: 5px 10px; /* Relleno (padding) */
+    border-radius: 5px; /* Opcional: bordes más redondeados */
+}
+
+    .btn-primary:hover {
+        background-color: #26964b;
+    }
+
+    .form-control {
+        border: 1px solid #EBEBEB;
+        border-radius: 8px;
+        padding: 0.75rem;
+    }
+    .message button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.message button:hover {
+    color: #495057;
+}
+
+</style>
+
+<div class="container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h4 class="mb-0">Asistente de FinanzApp</h4>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Los mensajes se agregarán aquí dinámicamente -->
+        </div>
+        <div class="topic-buttons">
+            <button class="btn btn-outline-success btn-sm p-1 me-2" onclick="selectTopic('Consejos financieros')">
+                <i class="fas fa-piggy-bank"></i> Consejos financieros
+            </button>
+            <button class="btn btn-outline-success btn-sm p-1 me-2" onclick="selectTopic('Emprendimientos')">
+                <i class="fas fa-lightbulb"></i> Emprendimientos
+            </button>
+            <button class="btn btn-outline-success btn-sm p-1" onclick="selectTopic('Gestión del dinero')">
+                <i class="fas fa-wallet"></i> Gestión del dinero
+            </button>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="messageInput" class="form-control" placeholder="Escribe un mensaje...">
+            <button class="btn btn-primary" onclick="sendMessage()">  <i class="fas fa-paper-plane"></i> Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let selectedTopic = null; // Variable para almacenar el tema seleccionado
+
+// Función para seleccionar un tema
+function selectTopic(topic) {
+    selectedTopic = topic; // Guardar el tema seleccionado
+    addMessage(`Has seleccionado: ${topic}`, 'received');
+}
+
+// Función para enviar un mensaje
+function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+
+    if (message && selectedTopic) {
+        // Enviar datos al servidor
+        fetch('/consejos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mensaje: message,
+                tema: selectedTopic
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                addMessage(data.error, 'error');
+            } else {
+                addMessage(data.respuesta, 'received');
+            }
+        })
+        .catch(error => {
+            console.error('Error al enviar el mensaje:', error);
+            addMessage('Hubo un problema al procesar tu mensaje.', 'error');
+        });
+
+        // Limpiar el campo de entrada
+        messageInput.value = '';
+    } else {
+        alert('Por favor, escribe un mensaje y selecciona un tema.');
+    }
+}
+
+// Función para añadir un mensaje al chat
+function addMessage(text, type) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', type);
+
+    const textElement = document.createElement('span');
+    textElement.textContent = text;
+
+    const narrateButton = document.createElement('button');
+    narrateButton.classList.add('btn', 'btn-sm', 'btn-outline-secondary', 'ms-2');
+    narrateButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    narrateButton.title = 'Narrar texto';
+
+    narrateButton.addEventListener('click', () => narrateText(text));
+
+    messageElement.appendChild(textElement);
+    messageElement.appendChild(narrateButton);
+
+    chatMessages.appendChild(messageElement);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+//funcion para narrar el texto 
+function narrateText(text) {
+    const synth = window.speechSynthesis;
+
+    // Verificar si hay soporte
+    if (!synth) {
+        alert('La narración no es compatible con este navegador.');
+        return;
+    }
+
+    // Crear el objeto de síntesis de voz
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Opciones de configuración
+    utterance.lang = 'es-ES'; // Idioma: Español de España (puedes cambiarlo)
+    utterance.pitch = 1; // Tono
+    utterance.rate = 1; // Velocidad
+    utterance.volume = 1; // Volumen
+
+    // Iniciar la narración
+    synth.speak(utterance);
+}
+
+
+// Evento para enviar mensaje con la tecla Enter
+document.getElementById('messageInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+</script>
+
+{% endblock %}

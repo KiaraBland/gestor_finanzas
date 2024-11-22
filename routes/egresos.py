@@ -37,21 +37,24 @@ def egresoscrear():
         categoria = request.form['categoria']
         habitual= request.form['habitual']
         fecha_pago = request.form['fecha_pago']
-
+        estado=request.form['estado']
+   
         fecha = datetime.date.today()
         if not cantidad or not divisa or not categoria:
                 flash("Todos los campos son obligatorios.", "error")
                 return redirect(url_for('egresos.crearegresos'))
         # Insertar el nuevo usuario en la base de datos
         db.session.execute(
-            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,fecha) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:fecha)"),
+            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,fecha,estado) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:fecha,:estado)"),
             {"categoria_id": categoria, 
                 "divisa_id": divisa,
                 "usuario_id":session['usuario_id'],
                 "cantidad":cantidad,
                 "habitual":habitual,
                 "fecha_pago":fecha_pago,
-                "fecha":fecha}
+                "fecha":fecha,
+                "estado":estado
+                }
         )
         db.session.commit()  # Confirmar cambios en la base de datos
 
@@ -96,7 +99,7 @@ def actualizar_egreso(id):
         categoria = request.form['categoria']
         habitual= request.form['habitual']
         fecha_pago = request.form['fecha_pago']
-
+        estado = request.form['estado']
         # Validación de los campos
         if not cantidad or not divisa or not categoria:
             flash("Todos los campos son obligatorios.", "error")
@@ -104,19 +107,16 @@ def actualizar_egreso(id):
 
         
         db.session.execute(
-            text("""
-                UPDATE egresos
-                SET categoria_id = :categoria_id, divisa_id = :divisa_id, cantidad = :cantidad, habitual = :habitual, fecha_pago = :fecha_pago
-                WHERE id = :id
-            """),
-            {
-                "categoria_id": categoria,
+            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,estado) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:estado)"),
+            {"categoria_id": categoria, 
                 "divisa_id": divisa,
-                "cantidad": cantidad,
-                "habitual": habitual,
-                "fecha_pago": fecha_pago,
-                "id": id
-            }
+                "usuario_id":session['usuario_id'],
+                "cantidad":cantidad,
+                "habitual":habitual,
+                "fecha_pago":fecha_pago,
+               
+                "estado":estado
+                }
         )
         db.session.commit()  
 
@@ -134,21 +134,23 @@ def egresosreplicar():
         categoria = request.form['categoria']
         habitual= request.form['habitual']
         fecha_pago = request.form['fecha_pago']
-
+        estado = request.form['estado']
         fecha = datetime.date.today()
         if not cantidad or not divisa or not categoria:
                 flash("Todos los campos son obligatorios.", "error")
                 return redirect(url_for('egresos.crearegresos'))
         # Insertar el nuevo usuario en la base de datos
         db.session.execute(
-            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,fecha) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:fecha)"),
+            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,fecha,estado) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:fecha,:estado)"),
             {"categoria_id": categoria, 
                 "divisa_id": divisa,
                 "usuario_id":session['usuario_id'],
                 "cantidad":cantidad,
                 "habitual":habitual,
                 "fecha_pago":fecha_pago,
-                "fecha":fecha}
+                "fecha":fecha,
+                "estado":estado
+                }
         )
         db.session.commit()  # Confirmar cambios en la base de datos
 
@@ -170,3 +172,32 @@ def egresosreplicar():
         flash("Registro replicado exitosamente. .", "success")
         return redirect( url_for('egresos.index') )
 
+
+@egresos.route('/cancelaregreso/<int:id>', methods=['POST'])
+@login_required
+def cancelaregreso(id):
+
+    egreso = db.session.execute(
+            text("SELECT estado FROM egresos WHERE id = :id"),
+            {"id": id}
+        ).fetchone()
+
+    if not egreso:
+        flash("Egreso no encontrado.", "error")
+        return redirect(url_for('egresos.index'))
+
+        # Verificar que el egreso no esté ya cancelado
+    if egreso[0] == 1:  # 1 es el estado de "Cancelado"
+        flash("Este egreso ya está cancelado.", "warning")
+        return redirect(url_for('egresos.index'))
+
+        # Cambiar el estado a cancelado (0) usando SQL puro
+    db.session.execute(
+            text("UPDATE egresos SET estado = 1 WHERE id = :id"),
+            {"id": id}
+        )
+    db.session.commit()
+    flash("Egreso cancelado exitosamente.", "success")
+
+
+    return redirect(url_for('egresos.index'))

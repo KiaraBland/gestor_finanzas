@@ -22,15 +22,6 @@ CREATE TABLE `divisa` (
   `simbolo` VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE `billetera` (
-  `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
-  `divisa_id` INTEGER,
-  `usuario_id` INTEGER,
-  `cantidad` DECIMAL(10, 2) NOT NULL,
-  `estado` INTEGER NOT NULL,
-  FOREIGN KEY (`divisa_id`) REFERENCES `divisa` (`id`),
-  FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-);
 
 CREATE TABLE `ingresos` (
   `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -53,7 +44,7 @@ CREATE TABLE `egresos` (
   `habitual` INTEGER NOT NULL,
   `fecha_pago` DATE,
   `fecha` DATE,
-
+  `estado` INTEGER,
   FOREIGN KEY (`categoria_id`) REFERENCES `Categoria` (`id`),
   FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   FOREIGN KEY (`divisa_id`) REFERENCES `divisa` (`id`)

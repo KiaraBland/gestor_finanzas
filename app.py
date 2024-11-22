@@ -6,7 +6,7 @@ from routes.registro import usuarios
 from routes.Ingresos import ingresos
 from routes.egresos import egresos  
 from routes.transacciones import transacciones  
-from routes.egresos import egresos 
+from routes.asistente import asistente 
 from routes.categoria import categoria
 from utils.helper import login_required
 import logging
@@ -77,7 +77,7 @@ app.register_blueprint(ingresos)
 app.register_blueprint(egresos)
 app.register_blueprint(transacciones)
 app.register_blueprint(categoria)
-
+app.register_blueprint(asistente)
 
 
 

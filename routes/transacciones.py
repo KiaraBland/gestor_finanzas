@@ -10,21 +10,66 @@ transacciones = Blueprint("transacciones", __name__)
 @transacciones.route('/inicio')
 @login_required
 def index():
-    ingresosencordobas = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM ingresos where divisa_id = 1 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
-    ingresosendolar = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM ingresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
-    egresosencordobas = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 1 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
-    egresosendolares = db.session.execute(text("SELECT sum(cantidad) as cantidad FROM egresos where divisa_id = 2 and usuario_id=:usuario_id"),{"usuario_id": session['usuario_id']}).fetchone()
-    # Obtener valores con un valor predeterminado en caso de None
+    # Consultas a la base de datos para obtener los ingresos y egresos en Córdobas y Dólares
+    ingresosencordobas = db.session.execute(
+        text("SELECT sum(cantidad) as cantidad FROM ingresos WHERE divisa_id = 1 AND usuario_id = :usuario_id"),
+        {"usuario_id": session['usuario_id']}
+    ).fetchone() or (0,)
+
+    ingresosendolar = db.session.execute(
+        text("SELECT sum(cantidad) as cantidad FROM ingresos WHERE divisa_id = 2 AND usuario_id = :usuario_id"),
+        {"usuario_id": session['usuario_id']}
+    ).fetchone() or (0,)
+
+    egresosencordobas = db.session.execute(
+        text("SELECT sum(cantidad) as cantidad FROM egresos WHERE divisa_id = 1 AND usuario_id = :usuario_id"),
+        {"usuario_id": session['usuario_id']}
+    ).fetchone() or (0,)
+
+    egresosendolares = db.session.execute(
+        text("SELECT sum(cantidad) as cantidad FROM egresos WHERE divisa_id = 2 AND usuario_id = :usuario_id"),
+        {"usuario_id": session['usuario_id']}
+    ).fetchone() or (0,)
+
+    # Obtener los valores de las consultas o asignar 0 si es None
+    ingresos_cordobas = ingresosencordobas[0] if ingresosencordobas[0] is not None else 0
+    ingresos_dolares = ingresosendolar[0] if ingresosendolar[0] is not None else 0
+    egresos_cordobas = egresosencordobas[0] if egresosencordobas[0] is not None else 0
+    egresos_dolares = egresosendolares[0] if egresosendolares[0] is not None else 0
+
+    # Consultar transacciones recientes
+    transacciones = db.session.execute(
+        text("SELECT * FROM movimientos WHERE usuario_id = :usuario_id ORDER BY fecha DESC LIMIT 3"),
+        {"usuario_id": session['usuario_id']}
+    ).fetchall()
+
     ingresos_cordobas = ingresosencordobas[0] or 0
     egresos_cordobas = egresosencordobas[0] or 0
     ingresos_dolares = ingresosendolar[0] or 0
     egresos_dolares = egresosendolares[0] or 0
-    transacciones = db.session.execute(text("SELECT * FROM movimientos where  usuario_id=:usuario_id    ORDER BY fecha DESC limit 3"),{"usuario_id": session['usuario_id']}).fetchall()
-    
-    # Calcular el saldo total en córdobas
-    saldototalencordoba = int(ingresos_cordobas) - int(egresos_cordobas)
-    saldototalendolares= int(ingresos_dolares)- int (egresos_dolares)
-    return render_template('index.html',ingresosencordobas=ingresosencordobas, ingresosendolar=ingresosendolar, egresosencordobas=egresosencordobas, egresosendolares=egresosendolares, saldototalencordoba= saldototalencordoba, saldototalendolares= saldototalendolares,transacciones=transacciones)
+    print(ingresos_cordobas)
+    print(egresos_cordobas)
+    print(egresos_dolares)
+    print(ingresos_dolares)
+
+    # Asegúrate de que no sean None antes de la comparación
+    saldototalencordoba = ingresos_cordobas - egresos_cordobas if ingresos_cordobas is not None and egresos_cordobas is not None else 0
+    saldototalendolares = ingresos_dolares - egresos_dolares if ingresos_dolares is not None and egresos_dolares is not None else 0
+
+
+    # Pasar los datos a la plantilla
+    return render_template(
+        'index.html',
+        ingresosencordobas=ingresos_cordobas,
+        ingresosendolar=ingresos_dolares,
+        egresosencordobas=egresos_cordobas,
+        egresosendolares=egresos_dolares,
+        saldototalencordoba=saldototalencordoba,
+        saldototalendolares=saldototalendolares,
+        transacciones=transacciones
+    )
+
+
 @transacciones.route('/estadisticas')
 @login_required
 def estadisticas():
