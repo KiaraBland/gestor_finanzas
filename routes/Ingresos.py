@@ -64,6 +64,16 @@ def ingresoscrear():
                 "tipo":"ingreso"}
         )
         db.session.commit() 
+         
+        db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + concepto,
+                "medio":"Nuevo ingreso"
+            }
+        )
+        db.session.commit() 
+
         flash("Registro exitoso. .", "success")
         return redirect( url_for('ingresos.index') )
     
@@ -106,6 +116,21 @@ def actualizar_ingreso(id):
             }
         )
         db.session.commit()  
+        categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+        concepto=categorianombre[1]
+         
+        db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha actualizado el ingreso con el concepto" + concepto,
+                "medio":"Actualización de egreso"
+            }
+        )
+        db.session.commit() 
 
         flash("Ingreso actualizado exitosamente.", "success")
         return redirect(url_for('ingresos.index'))
@@ -135,7 +160,35 @@ def replicaringreso(ingreso_id):
             "fecha": fecha
         }
     )
-    db.session.commit()  # Confirm the changes in the database
+    db.session.commit()  # Confirm the changes in the database1
+    cantidad = request.form['cantidad']
+    divisa = request.form['divisa']
+    categoria = request.form['categoria']
+    fecha = datetime.date.today()
+    categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+    concepto=categorianombre[1]
+    db.session.execute(
+            text("INSERT INTO movimientos (usuario_id,divisa_id,cantidad,concepto,tipo) VALUES (:usuario_id,:divisa_id,:cantidad,:concepto,:tipo)"),
+            {"usuario_id":session['usuario_id'],
+                "divisa_id":divisa,
+                "cantidad":cantidad,
+                "concepto":concepto,
+                "tipo":"ingreso"}
+        )
+    db.session.commit() 
+    db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + concepto,
+                "medio":"Nuevo ingreso"
+            }
+        )
+    db.session.commit() 
+
     flash("Ingreso replicado exitosamente.", "success")
 
 

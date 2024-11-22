@@ -118,16 +118,17 @@
           <td>{{egresos.fecha}}</td>
           <td>{{egresos.fecha_pago}}</td>
           <td>
+            <span class="badge {{ 'bg-success' if egresos.habitual == 1 else 'bg-secondary' }}">
+              {{ 'Habitual' if egresos.habitual == 1 else 'No Habitual' }}
+            </span>
+          </td>
+          <td>
             <span class="badge {{ 'bg-success' if egresos.estado == 1 else 'bg-danger' }}">
               {{ 'Cancelado' if egresos.estado == 1 else 'Por pagar' }}
             </span>
           </td>
 
-          <td>
-            <span class="badge {{ 'bg-success' if egresos.habitual == 1 else 'bg-secondary' }}">
-              {{ 'Habitual' if egresos.habitual == 1 else 'No Habitual' }}
-            </span>
-          </td>
+        
 
           <td>
             <div class="d-flex justify-content-end align-items-center gap-2">

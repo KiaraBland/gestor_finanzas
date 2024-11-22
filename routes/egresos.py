@@ -73,6 +73,15 @@ def egresoscrear():
                 "tipo":"egreso"}
         )
         db.session.commit() 
+         
+        db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + concepto,
+                "medio":"Nuevo egreso"
+            }
+        )
+        db.session.commit() 
 
         
 
@@ -119,6 +128,20 @@ def actualizar_egreso(id):
                 }
         )
         db.session.commit()  
+        categorianombre=db.session.execute(
+        text("SELECT * FROM categoria WHERE id = :id"),
+        {"id": categoria}
+    ).fetchone()
+        
+        concepto=categorianombre[1]
+        db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha actualizado el egreso con el concepto" + concepto,
+                "medio":"Actualizacion de egreso"
+            }
+        )
+        db.session.commit() 
 
         flash("Egreso actualizado exitosamente.", "success")
         return redirect(url_for('egresos.index'))
@@ -150,6 +173,7 @@ def egresosreplicar():
                 "fecha_pago":fecha_pago,
                 "fecha":fecha,
                 "estado":estado
+                
                 }
         )
         db.session.commit()  # Confirmar cambios en la base de datos
@@ -169,6 +193,18 @@ def egresosreplicar():
                 "tipo":"egreso"}
         )
         db.session.commit() 
+        
+        
+        db.session.execute(
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            {"usuario_id":session['usuario_id'],
+                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + concepto,
+                "medio":"Nuevo egreso"
+            }
+        )
+        db.session.commit() 
+
+
         flash("Registro replicado exitosamente. .", "success")
         return redirect( url_for('egresos.index') )
 
