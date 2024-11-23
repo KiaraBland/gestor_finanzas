@@ -74,6 +74,7 @@ def login():
             # Iniciar sesión guardando datos en la sesión del usuario
             session['usuario_id'] = usuario[0]
             session['nombre'] = usuario[1]
+            session['correo']=usuario[4]
             flash("Inicio de sesión exitoso. Bienvenido/a, " +
                   usuario[1], "success")
             return redirect(url_for('transacciones.index'))

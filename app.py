@@ -14,18 +14,22 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy import text
 from flask_mail import Mail, Message
+from datetime import datetime, timedelta
 load_dotenv()
-
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 app = Flask(__name__)
 
-#configuracion de envio de correo 
-app.config['MAIL_SERVER']= 'smtp.gmail.com'
-app.config['MAIL_PORT']= 587
-app.config['MAIL_USERNAME']= os.environ["GMAIL_EMAIL"]
-app.config['MAIL_PASSWORD']= os.environ["GMAIL_PASSWORD"]
-app.config['MAIL_USE_TLS']= True
-app.config['MAIL_USE_SSL']= False
-app.config['MAIL_DEFAULT_SENDER']= 'smtp,gmail.com'
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = os.environ["GMAIL_EMAIL"]  # Use your actual Gmail address
+app.config['MAIL_PASSWORD'] = os.environ["GMAIL_PASSWORD"]     # Use your generated App Password
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
+
 
 
 # settings
@@ -40,18 +44,9 @@ db.init_app(app)
 
 # Configuración del registro
 logging.basicConfig(level=logging.INFO)
-mail = Mail(app)
 
-@app.route("/correo")
-def correo():
-    msg = Message(
-        subject='Hello from the other side!', 
-        sender= os.environ["GMAIL_EMAIL"],  # Ensure this matches MAIL_USERNAME
-        recipients=['kiarablandon75@gmail.com']  # Replace with actual recipient's email
-    )
-    msg.body = "Hey, sending you this email from my Flask app, let me know if it works."
-    mail.send(msg)
-    return "Message sent!"
+
+
 @app.route('/')
 @login_required
 def index():
@@ -72,11 +67,60 @@ def after_request(response):
     app.logger.info(f"Request: {request.method} {request.path} - Response Status: {response.status}")
     
     return response
-#context processor cada vez que se navega por la pagina se ejecuta la funcion y eso genera las notificaciones, una vez generada se pasan al base.html
+def obtener_pagos_pendientes():
+    # Obtener la fecha de mañana
+    manana = datetime.now() + timedelta(days=1)
+    manana_str = manana.strftime('%Y-%m-%d')  # Formato de fecha en formato ISO (yyyy-mm-dd)
+
+    # Consulta para obtener los pagos pendientes para el día de mañana
+    result = db.session.execute(
+        text("""
+            SELECT * FROM egresos 
+            WHERE DATE(fecha_pago) = :fecha_pago AND estado = 'pendiente'
+        """),
+        {"fecha_pago": manana_str}
+    ).fetchall()
+    return result
+
+def verificar_recordatorio_existente(usuario_id):
+    mañana = datetime.now() + timedelta(days=1)
+    mañana_str = mañana.strftime('%Y-%m-%d')
+
+    # Verificar si ya existe un recordatorio de pago pendiente para mañana
+    result = db.session.execute(
+        text("""
+            SELECT COUNT(*) FROM notificacion 
+            WHERE usuario_id = :usuario_id 
+            AND medio = 'Recordatorio de pago' 
+            AND descripcion LIKE :descripcion
+        """),
+        {"usuario_id": usuario_id, "descripcion": f"%{mañana_str}%"}
+    ).fetchone()
+
+    return result[0] > 0  
+
+
+
+# Función para crear el recordatorio en la base de datos
+def crear_recordatorio(usuario_id):
+    manana = datetime.now() + timedelta(days=1)
+    manana_str = manana.strftime('%Y-%m-%d')
+
+    descripcion = f"Recordatorio de pagos pendientes para mañana ({manana_str})"
+    
+    db.session.execute(
+        text("""
+            INSERT INTO notificacion (usuario_id, descripcion, medio, visto) 
+            VALUES (:usuario_id, :descripcion, 'Recordatorio de pago', 0)
+        """),
+        {"usuario_id": usuario_id, "descripcion": descripcion}
+    )
+    db.session.commit()
+
+# El contexto de notificaciones y recordatorios
 @app.context_processor
 def inject_notificaciones():
     def contar_notificaciones_no_vistas(usuario_id):
-        # Consulta para contar las notificaciones no vistas
         result = db.session.execute(
             text("SELECT COUNT(*) FROM notificacion WHERE usuario_id = :usuario_id AND visto = 0"),
             {"usuario_id": usuario_id}
@@ -84,15 +128,20 @@ def inject_notificaciones():
         return result[0] if result else 0
 
     def obtener_medios_unicos_no_vistos(usuario_id):
-        # Consulta para obtener valores únicos del campo `medio`
         result = db.session.execute(
             text("SELECT DISTINCT medio FROM notificacion WHERE usuario_id = :usuario_id AND visto = 0"),
             {"usuario_id": usuario_id}
         ).fetchall()
-        return [row[0] for row in result]  # Devuelve solo los valores únicos del campo medio
+        return [row[0] for row in result]
 
     # Obtener el usuario actual desde la sesión
-    usuario_id = session.get('usuario_id', None)  # Ajusta esto según tu lógica de autenticación
+    usuario_id = session.get('usuario_id', None)
+
+    if usuario_id:
+        # Verificar si ya se ha enviado el recordatorio
+        if not verificar_recordatorio_existente(usuario_id):
+           
+            crear_recordatorio(usuario_id)
 
     notificaciones_no_vistas = contar_notificaciones_no_vistas(usuario_id) if usuario_id else 0
     medios_unicos_no_vistos = obtener_medios_unicos_no_vistos(usuario_id) if usuario_id else []
@@ -101,6 +150,7 @@ def inject_notificaciones():
         'notificaciones_no_vistas': notificaciones_no_vistas,
         'medios_unicos_no_vistos': medios_unicos_no_vistos
     }
+
 app.register_blueprint(usuarios)
 app.register_blueprint(ingresos)
 app.register_blueprint(egresos)
