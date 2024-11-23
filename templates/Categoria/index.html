@@ -6,15 +6,19 @@
     border-radius: 15px;
     transition: all 0.3s ease;
   }
+
   .card:hover {
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
+
   .list-group-item {
     transition: background-color 0.3s ease;
   }
+
   .list-group-item:hover {
     background-color: #f8f9fa;
   }
+
   .btn {
     border-radius: 25px;
     padding: 10px 20px;
@@ -168,7 +172,8 @@
             <div class="card shadow-sm">
               <div class="card-body">
                 <div class="text-center mb-4">
-                  <img src="https://api.dicebear.com/6.x/initials/svg?seed={{ usuarios['nombre'] }}" alt="{{ usuarios['nombre'] }}" class="rounded-circle mb-3" width="100" height="100">
+                  <img src="https://api.dicebear.com/6.x/initials/svg?seed={{ usuarios['nombre'] }}"
+                    alt="{{ usuarios['nombre'] }}" class="rounded-circle mb-3" width="100" height="100">
                   <h2 class="card-title">{{ usuarios['nombre'] }}</h2>
                 </div>
                 <ul class="list-group list-group-flush mb-4">
@@ -186,8 +191,9 @@
                   </li>
                 </ul>
                 <div class="d-grid gap-2">
-                  <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#actualizarModal">
-                    <i class="bi bi-pencil-square me-2"></i>  Actualizar
+                  <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
+                    data-bs-target="#actualizarModal">
+                    <i class="bi bi-pencil-square me-2"></i> Actualizar
                   </button>
                   <a href="{{ url_for('usuarios.logout') }}" class="btn btn-outline-danger">
                     <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
@@ -198,7 +204,7 @@
           </div>
         </div>
       </div>
-     
+
       <!-- Modal -->
       <div class="modal fade" id="actualizarModal" tabindex="-1" aria-labelledby="actualizarModalLabel"
         aria-hidden="true">
@@ -236,7 +242,34 @@
     </div>
 
     <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab"
-      tabindex="0">...</div>
+      tabindex="0">
+      <h1>Notificaciones</h1>
+      {% if notificaciones %}
+      <ul class="list-group">
+        {% for notificacion in notificaciones %}
+        <li class="list-group-item {{ 'bg-light' if notificacion.visto == 0 else '' }}">
+          <div>
+            <strong>{{ notificacion.descripcion }}</strong>
+            <br>
+            <p><i>{{ notificacion.medio }}</i></p>
+            {% if notificacion.visto == 0 %}
+            <span class="badge bg-danger">No vista</span>
+            <form action="{{ url_for('categoria.marcar_como_vista', notificacion_id=notificacion.id) }}" method="post">
+              <button type="submit" class="btn btn-sm btn-success">Marcar como leída</button>
+          </form>
+          
+            {% else %}
+            <span class="badge bg-success">Vista</span>
+            {% endif %}
+          
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-muted">No tienes notificaciones.</p>
+      {% endif %}
+    </div>
 
   </div>
 </div>

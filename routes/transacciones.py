@@ -60,10 +60,10 @@ def index():
     # Pasar los datos a la plantilla
     return render_template(
         'index.html',
-        ingresosencordobas=ingresos_cordobas,
-        ingresosendolar=ingresos_dolares,
-        egresosencordobas=egresos_cordobas,
-        egresosendolares=egresos_dolares,
+        ingresos_cordobas=ingresos_cordobas,
+        ingresos_dolares=ingresos_dolares,
+        egresos_cordobas=egresos_cordobas,
+        egresos_dolares=egresos_dolares,
         saldototalencordoba=saldototalencordoba,
         saldototalendolares=saldototalendolares,
         transacciones=transacciones

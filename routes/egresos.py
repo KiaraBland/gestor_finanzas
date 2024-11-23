@@ -75,10 +75,11 @@ def egresoscrear():
         db.session.commit() 
          
         db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + concepto,
-                "medio":"Nuevo egreso"
+                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + " " +concepto,
+                "medio":"Nuevo egreso",
+                "visto":0
             }
         )
         db.session.commit() 
@@ -109,6 +110,7 @@ def actualizar_egreso(id):
         habitual= request.form['habitual']
         fecha_pago = request.form['fecha_pago']
         estado = request.form['estado']
+        print(cantidad)
         # Validación de los campos
         if not cantidad or not divisa or not categoria:
             flash("Todos los campos son obligatorios.", "error")
@@ -116,17 +118,30 @@ def actualizar_egreso(id):
 
         
         db.session.execute(
-            text("INSERT INTO egresos (categoria_id,divisa_id,usuario_id,cantidad,habitual,fecha_pago,estado) VALUES (:categoria_id,:divisa_id,:usuario_id,:cantidad,:habitual,:fecha_pago,:estado)"),
-            {"categoria_id": categoria, 
-                "divisa_id": divisa,
-                "usuario_id":session['usuario_id'],
-                "cantidad":cantidad,
-                "habitual":habitual,
-                "fecha_pago":fecha_pago,
-               
-                "estado":estado
-                }
-        )
+    text("""
+        UPDATE egresos 
+        SET 
+            categoria_id = :categoria_id,
+            divisa_id = :divisa_id,
+            cantidad = :cantidad,
+            habitual = :habitual,
+            fecha_pago = :fecha_pago,
+            estado = :estado
+        WHERE id = :egreso_id
+    """),
+    {
+        "categoria_id": categoria,
+        "divisa_id": divisa,
+        "usuario_id": session['usuario_id'],
+        "cantidad": cantidad,
+        "habitual": habitual,
+        "fecha_pago": fecha_pago,
+        "estado": estado,
+        "egreso_id": id  # El identificador del egreso que deseas actualizar
+    }
+)
+        db.session.commit()
+
         db.session.commit()  
         categorianombre=db.session.execute(
         text("SELECT * FROM categoria WHERE id = :id"),
@@ -135,14 +150,14 @@ def actualizar_egreso(id):
         
         concepto=categorianombre[1]
         db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha actualizado el egreso con el concepto" + concepto,
-                "medio":"Actualizacion de egreso"
+                "descripcion":"Se ha registrado la actualizacion egreso con el concepto"+ " " +concepto,
+                "medio":"Actualizacion egreso",
+                "visto":0
             }
         )
         db.session.commit() 
-
         flash("Egreso actualizado exitosamente.", "success")
         return redirect(url_for('egresos.index'))
     
@@ -196,10 +211,11 @@ def egresosreplicar():
         
         
         db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + concepto,
-                "medio":"Nuevo egreso"
+                "descripcion":"Se ha registrado un nuevo egreso con el concepto" + " " +concepto,
+                "medio":"Nuevo egreso",
+                "visto":0
             }
         )
         db.session.commit() 

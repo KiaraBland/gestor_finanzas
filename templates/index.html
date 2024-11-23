@@ -38,41 +38,41 @@
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if ingresosencordobas < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if ingresos_cordobas < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Ingresos en Córdobas</h5>
                     <p class="card-amount mb-0">
-                        C${{ "{:,.2f}".format(ingresosencordobas['cantidad'] | default(0)) }}</p>
+                        C${{ "{:,.2f}".format(ingresos_cordobas | default(0)) }}</p>
                     <i class="fas fa-arrow-up icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if ingresosendolar < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if ingresos_dolares < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Ingresos en Dólares</h5>
                     <p class="card-amount mb-0">
-                        ${{ "{:,.2f}".format(ingresosendolar['cantidad'] | default(0)) }}</p>
+                        ${{ "{:,.2f}".format(ingresos_dolares | default(0)) }}</p>
                     <i class="fas fa-arrow-up icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if egresosencordobas < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if egresos_cordobas < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Gastos en Córdobas</h5>
                     <p class="card-amount mb-0">
-                        C${{ "{:,.2f}".format(egresosencordobas['cantidad'] | default(0)) }}</p>
+                        C${{ "{:,.2f}".format(egresos_cordobas | default(0)) }}</p>
                     <i class="fas fa-arrow-down icon-bg"></i>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 {{ 'bg-danger' if egresosendolares < 0 else 'bg-success' }} text-white">
+            <div class="card h-100 {{ 'bg-danger' if egresos_dolares < 0 else 'bg-success' }} text-white">
                 <div class="card-body position-relative">
                     <h5 class="card-title">Gastos en Dólares</h5>
                     <p class="card-amount mb-0">
-                        ${{ "{:,.2f}".format(egresosendolares['cantidad'] | default(0)) }}</p>
+                        ${{ "{:,.2f}".format(egresos_dolares | default(0)) }}</p>
                     <i class="fas fa-arrow-down icon-bg"></i>
                 </div>
             </div>

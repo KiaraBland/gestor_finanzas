@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,request,render_template,redirect,url_for
+from flask import Flask,jsonify,request,render_template,redirect,url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from config import DATABASE_CONNECTION_URI
 from utils.db import db
@@ -12,6 +12,7 @@ from utils.helper import login_required
 import logging
 from dotenv import load_dotenv
 import os
+from sqlalchemy import text
 from flask_mail import Mail, Message
 load_dotenv()
 
@@ -72,6 +73,34 @@ def after_request(response):
     
     return response
 
+@app.context_processor
+def inject_notificaciones():
+    def contar_notificaciones_no_vistas(usuario_id):
+        # Consulta para contar las notificaciones no vistas
+        result = db.session.execute(
+            text("SELECT COUNT(*) FROM notificacion WHERE usuario_id = :usuario_id AND visto = 0"),
+            {"usuario_id": usuario_id}
+        ).fetchone()
+        return result[0] if result else 0
+
+    def obtener_medios_unicos_no_vistos(usuario_id):
+        # Consulta para obtener valores únicos del campo `medio`
+        result = db.session.execute(
+            text("SELECT DISTINCT medio FROM notificacion WHERE usuario_id = :usuario_id AND visto = 0"),
+            {"usuario_id": usuario_id}
+        ).fetchall()
+        return [row[0] for row in result]  # Devuelve solo los valores únicos del campo medio
+
+    # Obtener el usuario actual desde la sesión
+    usuario_id = session.get('usuario_id', None)  # Ajusta esto según tu lógica de autenticación
+
+    notificaciones_no_vistas = contar_notificaciones_no_vistas(usuario_id) if usuario_id else 0
+    medios_unicos_no_vistos = obtener_medios_unicos_no_vistos(usuario_id) if usuario_id else []
+
+    return {
+        'notificaciones_no_vistas': notificaciones_no_vistas,
+        'medios_unicos_no_vistos': medios_unicos_no_vistos
+    }
 app.register_blueprint(usuarios)
 app.register_blueprint(ingresos)
 app.register_blueprint(egresos)

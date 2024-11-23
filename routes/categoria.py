@@ -17,8 +17,16 @@ def index():
     categoria = db.session.execute(
             text("SELECT * FROM categoria")
         ).fetchall()
-    print(categoria)
-    return render_template('categoria/index.html',categoria=categoria,usuarios=usuarios)
+    notificaciones = db.session.execute(
+        text("""
+            SELECT id, descripcion, medio, visto 
+            FROM notificacion 
+            WHERE usuario_id = :usuario_id 
+           
+        """),
+        {"usuario_id": id}
+    ).fetchall()
+    return render_template('categoria/index.html',categoria=categoria,usuarios=usuarios,notificaciones=notificaciones)
 
 @categoria.route('/crearcategoria',methods=["POST", "GET"])
 @login_required
@@ -91,3 +99,25 @@ def actualizar_categoria(id):
         flash("Categoria actualizada exitosamente.", "success")
         return redirect(url_for('categoria.index'))
 
+
+@categoria.route('/marcar_como_vista/<int:notificacion_id>', methods=['POST'])
+def marcar_como_vista(notificacion_id):
+    # Verificar que el usuario esté autenticado
+    usuario_id = session.get('usuario_id')
+    if not usuario_id:
+        return redirect(url_for('login'))  # Redirige si no está autenticado
+
+    # Actualizar la notificación como vista
+    db.session.execute(
+        text("""
+            UPDATE notificacion
+            SET visto = 1
+            WHERE id = :notificacion_id AND usuario_id = :usuario_id
+        """),
+        {"notificacion_id": notificacion_id, "usuario_id": usuario_id}
+    )
+    db.session.commit()
+    flash("Registro exitoso. .", "success")
+
+    # Redirigir de nuevo a la página de notificaciones
+    return redirect(url_for('categoria.index'))

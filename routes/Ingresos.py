@@ -66,10 +66,11 @@ def ingresoscrear():
         db.session.commit() 
          
         db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + concepto,
-                "medio":"Nuevo ingreso"
+                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + " " +concepto,
+                "medio":"Nuevo ingreso",
+                "visto":0
             }
         )
         db.session.commit() 
@@ -124,10 +125,11 @@ def actualizar_ingreso(id):
         concepto=categorianombre[1]
          
         db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha actualizado el ingreso con el concepto" + concepto,
-                "medio":"Actualización de egreso"
+                "descripcion":"Se ha actualizado el ingreso con el concepto" + " " +concepto,
+                "medio":"Actualización de egreso",
+                "visto":0
             }
         )
         db.session.commit() 
@@ -181,10 +183,11 @@ def replicaringreso(ingreso_id):
         )
     db.session.commit() 
     db.session.execute(
-            text("INSERT INTO notificacion (usuario_id,descripcion,medio) VALUES (:usuario_id,:descripcion,:medio)"),
+            text("INSERT INTO notificacion (usuario_id,descripcion,medio,visto) VALUES (:usuario_id,:descripcion,:medio,:visto)"),
             {"usuario_id":session['usuario_id'],
-                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + concepto,
-                "medio":"Nuevo ingreso"
+                "descripcion":"Se ha registrado un nuevo ingreso con el concepto" + " " +concepto,
+                "medio":"Nuevo ingreso",
+                "visto":0
             }
         )
     db.session.commit() 

@@ -66,5 +66,6 @@ CREATE TABLE `notificacion` (
   `usuario_id` INTEGER,
   `descripcion` VARCHAR(255),
   `medio` VARCHAR(255) NOT NULL,
+  `visto` INTEGER,
   FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
 );
