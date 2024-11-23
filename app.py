@@ -72,7 +72,7 @@ def after_request(response):
     app.logger.info(f"Request: {request.method} {request.path} - Response Status: {response.status}")
     
     return response
-
+#context processor cada vez que se navega por la pagina se ejecuta la funcion y eso genera las notificaciones, una vez generada se pasan al base.html
 @app.context_processor
 def inject_notificaciones():
     def contar_notificaciones_no_vistas(usuario_id):
